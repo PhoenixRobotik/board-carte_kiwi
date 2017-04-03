@@ -3,6 +3,8 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
 
+#include <stdint.h>
+
 typedef uint32_t Port;
 typedef uint16_t Pin;
 
