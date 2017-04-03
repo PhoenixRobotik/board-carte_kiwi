@@ -8,6 +8,8 @@ cmake_install.cmake
 ## Les fichiers compilés
 *.a
 PhoenixCartographieExemple
+build
+build-*
 
 ## Data
 plateau.png
