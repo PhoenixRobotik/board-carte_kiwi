@@ -36,11 +36,10 @@ System::System() {
 
 }
 
-
 int32_t System::getSysTick() {
     return systick_count;
-
 }
+
 void System::sleep_ms(int32_t ms) {
     int count_max = systick_count + MILLIS_TO_SYSTICK(ms);
     while(systick_count < count_max) {}
