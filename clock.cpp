@@ -5,6 +5,8 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/cm3/systick.h>
 
+void* __dso_handle;
+
 class SystemInitializer {
 public:
     SystemInitializer() { theSystem(); }

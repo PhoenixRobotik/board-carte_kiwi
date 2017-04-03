@@ -1,18 +1,13 @@
 #pragma once
 
-#include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
-
-#include <stdint.h>
-
-typedef uint32_t Port;
-typedef uint16_t Pin;
+#include "gpio_cpp.h"
 
 #ifdef __cplusplus
 
 class Led {
 public:
-    Led(Port _port, Pin _pin)
+    Led(Port::Number _port, Pin::Number _pin)
     : port(_port)
     , pin (_pin)
     {
@@ -34,8 +29,8 @@ public:
         gpio_mode_setup(port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, pin);
     }
 
-    Port port;
-    Pin  pin;
+    Port::Number port;
+    Pin::Number  pin;
 };
 
 extern Led activeLed;

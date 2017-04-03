@@ -1,12 +1,13 @@
 #include "leds.h"
 
 #include <libopencm3/stm32/gpio.h>
-void* __dso_handle;
 
-Port LedsPort = GPIOF;
+Port::Number
+    LedsPort = Port::_F;
 
-Pin LedActivePin = GPIO0,
-    LedStatusPin = GPIO1;
+Pin::Number
+    LedActivePin = Pin::_0,
+    LedStatusPin = Pin::_1;
 
 
 Led activeLed(LedsPort, LedActivePin);
