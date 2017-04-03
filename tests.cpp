@@ -45,20 +45,17 @@
 // }
 
 
-
-
 int main(int argc, char const *argv[])
 {
-    init_clock();
     rcc_periph_clock_enable(RCC_GPIOF);
-    init_leds();
-
+    int i = 0;
     bool ledsOn = true;
     while(true)
     {
 
         statusLed.set(ledsOn);
         activeLed.set(!ledsOn);
+        i = (i+1)%1001;
 
         // led_status_set(ledsOn);
         // led_active_set(!ledsOn);

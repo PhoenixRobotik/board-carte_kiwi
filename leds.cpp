@@ -15,22 +15,10 @@ Port    LedActivePin = GPIO0,
 Led activeLed(LedsPort, LedActivePin);
 Led statusLed(LedsPort, LedStatusPin);
 
-#ifdef __cplusplus
 extern "C" {
-#endif
+    void led_active_set(bool on){   activeLed.set(on);  }
+    void led_active_toggle()    {   activeLed.toggle(); }
 
-
-void init_leds() {
-    activeLed.init();
-    statusLed.init();
+    void led_status_set(bool on){   statusLed.set(on);  }
+    void led_status_toggle()    {   statusLed.toggle(); }
 }
-
-void led_active_set(bool on){   activeLed.set(on);  }
-void led_active_toggle()    {   activeLed.toggle(); }
-
-void led_status_set(bool on){   statusLed.set(on);  }
-void led_status_toggle()    {   statusLed.toggle(); }
-
-#ifdef __cplusplus
-}
-#endif

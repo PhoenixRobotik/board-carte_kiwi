@@ -3,11 +3,20 @@
 
 #include "clock.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define MILLIS_TO_SYSTICK(ms) (ms * SYSTICK_FREQ_HZ / 1000)
 
-void init_clock() {
+System& theSystem() {
+    static System theOneAndOnlySystem;
+    return theOneAndOnlySystem;
+}
+class SystemInitializer {
+public:
+    SystemInitializer() { theSystem(); }
+};
+SystemInitializer initializeTheSystemNow;
+
+
+System::System() {
     rcc_clock_setup_hsi(&rcc_hsi_8mhz[RCC_CLOCK_64MHZ]);
 
     systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
@@ -24,37 +33,32 @@ void init_clock() {
     rcc_periph_clock_enable(RCC_GPIOD);
     rcc_periph_clock_enable(RCC_GPIOE);
     rcc_periph_clock_enable(RCC_GPIOF);
+
 }
 
-volatile int systick_count = 0;
-#define MILLIS_TO_SYSTICK(ms) (ms * SYSTICK_FREQ_HZ / 1000)
 
-
-void sys_tick_handler() {
-    systick_count++;
-
-    // Alarms
-    // alarmCall(&LedsBleuesAlarm);
-    // alarmCall(&LedsRougesAlarm);
-    // alarmCall(&PhotoVideoAlarm);
-}
-
-int get_systick() {
+int32_t System::getSysTick() {
     return systick_count;
+
 }
-
-
-// Should not be used with FreeRTOS !!
-void delay_nop(uint64_t count) {
-    for (uint64_t i = 0; i < count; ++i)
-        __asm__("nop");
-}
-
-void delay_ms(unsigned int ms) {
+void System::sleep_ms(int32_t ms) {
     int count_max = systick_count + MILLIS_TO_SYSTICK(ms);
     while(systick_count < count_max) {}
 }
 
-#ifdef __cplusplus
+
+extern "C" {
+    // LibOpenCm3 export
+    void sys_tick_handler() {
+        theSystem().systick_count++;
+    }
+
+    int get_systick() {
+        return theSystem().getSysTick();
+    }
+
+    void delay_ms(unsigned int ms) {
+        return theSystem().sleep_ms(ms);
+    }
 }
-#endif
+

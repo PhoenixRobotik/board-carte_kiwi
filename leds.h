@@ -1,6 +1,7 @@
 #pragma once
 
 #include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/rcc.h>
 
 typedef uint32_t Port;
 typedef uint16_t Pin;
@@ -12,7 +13,9 @@ public:
     Led(Port _port, Pin _pin)
     : port(_port)
     , pin (_pin)
-    { }
+    {
+        init();
+    }
 
     ~Led() { }
 
@@ -25,6 +28,7 @@ public:
     }
 
     void init() {
+        rcc_periph_clock_enable(RCC_GPIOF);
         gpio_mode_setup(port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, pin);
     }
 
@@ -39,9 +43,6 @@ extern Led statusLed;
 extern "C" {
 #endif
 
-void init_leds();
-
-
 void led_active_set(bool on);
 void led_active_toggle();
 
@@ -50,5 +51,4 @@ void led_status_toggle();
 
 #ifdef __cplusplus
 }
-
 #endif
