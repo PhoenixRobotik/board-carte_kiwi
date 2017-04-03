@@ -17,6 +17,7 @@ include(${GenericCmakeLists})
 add_library(${PROJECT_NAME}Lib STATIC
     leds.cpp
     clock.cpp
+    eeprom.cpp
 )
 # Includes publics
 target_include_directories(${PROJECT_NAME}Lib INTERFACE
