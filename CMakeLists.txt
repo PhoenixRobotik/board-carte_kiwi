@@ -15,8 +15,8 @@ include(${GenericCmakeLists})
 ## Déclaration de la librairie aux projets qui utilisent celui-ci
 # Déclaration des sources de la librairie
 add_library(${PROJECT_NAME}Lib STATIC
-    leds
-    clock
+    leds.cpp
+    clock.cpp
 )
 # Includes publics
 target_include_directories(${PROJECT_NAME}Lib INTERFACE
@@ -32,7 +32,7 @@ target_link_libraries(${PROJECT_NAME}Lib INTERFACE
 export(TARGETS ${PROJECT_NAME}Lib FILE Librairie.cmake)
 
 add_executable(${PROJECT_NAME}Tests
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests.cpp
 )
 add_executable(main_binary ALIAS ${PROJECT_NAME}Tests)
 target_link_libraries(${PROJECT_NAME}Tests
