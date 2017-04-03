@@ -1,20 +1,20 @@
+#include "clock.h"
+
+#include "config_macros.h"
+
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/cm3/systick.h>
 
-#include "clock.h"
-
-#define MILLIS_TO_SYSTICK(ms) (ms * SYSTICK_FREQ_HZ / 1000)
-
-System& theSystem() {
-    static System theOneAndOnlySystem;
-    return theOneAndOnlySystem;
-}
 class SystemInitializer {
 public:
     SystemInitializer() { theSystem(); }
 };
 SystemInitializer initializeTheSystemNow;
 
+System& theSystem() {
+    static System theOneAndOnlySystem;
+    return theOneAndOnlySystem;
+}
 
 System::System() {
     rcc_clock_setup_hsi(&rcc_hsi_8mhz[RCC_CLOCK_64MHZ]);

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <stdint.h>
-#include <memory>
-#define BP __asm__("BKPT")
 
 // Stm32f303k8 specific !
 #define FLASH_BASE                  (0x08000000)
