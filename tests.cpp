@@ -12,7 +12,7 @@ int main(int argc, char const *argv[])
     DataOnEEPROM<TestEepromData> testData;
     TestEepromData data = testData.load();
 
-    data.on = !data.on;
+    data.on = (data.on == 0);
 
     testData.store(data);
 
