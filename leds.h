@@ -1,7 +1,7 @@
 #pragma once
 
 #include <libopencm3/stm32/rcc.h>
-#include "gpio_cpp.h"
+#include "definitions/gpio_cpp.h"
 
 #ifdef __cplusplus
 
