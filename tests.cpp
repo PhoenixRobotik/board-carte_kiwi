@@ -3,13 +3,10 @@
 #include "eeprom.h"
 #include "pwm.h"
 
-struct TestEepromData
-{
+struct TestEepromData {
     bool on;
 };
-
-int main(int argc, char const *argv[])
-{
+bool eepromTest() {
     DataOnEEPROM<TestEepromData> testData;
     TestEepromData data = testData.load(true);
     // Bool trim (stm32 silicon bug ?)
@@ -18,16 +15,23 @@ int main(int argc, char const *argv[])
     TestEepromData newData;
     newData.on = !data.on;
     testData.store(newData);
+    return newData.on;
+}
 
 
-    activeLedFloat.init();
-    activeLedFloat.setDuty(1024);
+void pwmTest() {
+    moteur1.setDuty(200);
+}
+
+int main(int argc, char const *argv[]) {
+    bool eepromStatus = true; // eepromTest();
+
+    pwmTest();
 
     bool ledsOn = true;
-    while(true)
-    {
+    while(true) {
         // activeLed.set(data.on ? true : ledsOn);
-        statusLed.set(data.on ? ledsOn : true);
+        statusLed.set(eepromStatus ? ledsOn : true);
         delay_ms(ledsOn ? 1 : 10);
         ledsOn = !ledsOn;
     }
