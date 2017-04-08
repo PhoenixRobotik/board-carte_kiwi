@@ -1,6 +1,7 @@
 #include "clock.h"
 #include "leds.h"
 #include "eeprom.h"
+#include "pwm.h"
 
 struct TestEepromData
 {
@@ -10,19 +11,25 @@ struct TestEepromData
 int main(int argc, char const *argv[])
 {
     DataOnEEPROM<TestEepromData> testData;
-    TestEepromData data = testData.load();
+    TestEepromData data = testData.load(true);
+    // Bool trim (stm32 silicon bug ?)
+    data.on = (data.on == 0) ? false : true;
 
-    data.on = (data.on == 0);
+    TestEepromData newData;
+    newData.on = !data.on;
+    testData.store(newData);
 
-    testData.store(data);
+
+    activeLedFloat.init();
+    activeLedFloat.setDuty(1024);
 
     bool ledsOn = true;
     while(true)
     {
+        // activeLed.set(data.on ? true : ledsOn);
         statusLed.set(data.on ? ledsOn : true);
-        activeLed.set(data.on ? true   : ledsOn);
+        delay_ms(ledsOn ? 1 : 10);
         ledsOn = !ledsOn;
-        delay_ms(100);
     }
 
     while(1);
