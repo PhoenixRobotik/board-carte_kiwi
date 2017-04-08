@@ -47,6 +47,11 @@ void System::sleep_ms(int32_t ms) {
     while(systick_count < count_max) {}
 }
 
+void System::sleep_us(int32_t us) {
+    int count_max = systick_count + MICROS_TO_SYSTICK(us);
+    while(systick_count < count_max) {}
+}
+
 
 extern "C" {
     // LibOpenCm3 export

@@ -11,6 +11,7 @@ class System
 public:
     int32_t getSysTick();
     void    sleep_ms(int32_t ms);
+    void    sleep_us(int32_t us);
 
 private:
     // Private constructor because System is singleton.
@@ -31,7 +32,6 @@ extern "C" {
 #endif
 
 int get_systick();
-void delay_nop(uint64_t count);
 void delay_ms(unsigned int ms);
 
 #ifdef __cplusplus
