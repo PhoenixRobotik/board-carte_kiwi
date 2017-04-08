@@ -25,18 +25,24 @@ void pwmTest() {
     moteur1.setDuty(110);
     theSystem().sleep_ms(500);
     moteur1.setDuty(150);
+
+    moteur2.setDuty(150);
+    theSystem().sleep_ms(1000);
+    moteur2.setDuty(110);
+    theSystem().sleep_ms(500);
+    moteur2.setDuty(150);
 }
 
 int main(int argc, char const *argv[]) {
-    bool eepromStatus = true; // eepromTest();
+    bool eepromStatus = eepromTest();
 
     pwmTest();
 
     bool ledsOn = true;
     while(true) {
-        // activeLed.set(data.on ? true : ledsOn);
-        statusLed.set(eepromStatus ? ledsOn : true);
-        delay_ms(ledsOn ? 1 : 10);
+        activeLed.set(eepromStatus ? true : ledsOn);
+        statusLed.set(eepromStatus);
+        delay_ms(ledsOn ? 100 : 100);
         ledsOn = !ledsOn;
     }
 

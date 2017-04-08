@@ -11,6 +11,11 @@ PWM moteur1(Port::_B, Pin::_0,
             AltFunction::_2,
             TIM_OC3);
 
+PWM moteur2(Port::_A, Pin::_6,
+            Timer3,
+            AltFunction::_2,
+            TIM_OC1);
+
 
 void PWM::init() {
     // Enable timer clock
@@ -36,7 +41,7 @@ void PWM::init() {
 
     // Setup GPIO
     gpio_set_output_options(
-                port, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ,
+                port, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ,
                 pin);
     gpio_mode_setup(
                 port, GPIO_MODE_AF, GPIO_PUPD_NONE,
