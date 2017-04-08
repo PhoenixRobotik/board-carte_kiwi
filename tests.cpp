@@ -20,7 +20,11 @@ bool eepromTest() {
 
 
 void pwmTest() {
-    moteur1.setDuty(200);
+    moteur1.setDuty(150);
+    theSystem().sleep_ms(1000);
+    moteur1.setDuty(110);
+    theSystem().sleep_ms(500);
+    moteur1.setDuty(150);
 }
 
 int main(int argc, char const *argv[]) {
