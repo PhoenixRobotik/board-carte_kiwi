@@ -25,7 +25,7 @@ void PWM::init() {
     // Enable timer interrupt
     nvic_enable_irq(timer.InterruptId);
     // Reset timer peripheral to defaults
-    rcc_periph_reset_pulse(timer.Reset);
+    // rcc_periph_reset_pulse(timer.Reset);
 
     // Reset timer peripheral
     timer_set_mode (timer.Peripheral,
@@ -76,3 +76,27 @@ void PWM::setDuty(uint32_t _duty) {
         enable();
 }
 
+void PWM::setMicrosec(uint64_t _microsec) {
+    setDuty(_microsec * PWM_GRANUL_FREQ_HZ / 1'000'000);
+}
+void PWM::setMillisec(int _millisec) {
+    setMicrosec((uint64_t)_millisec * 1000);
+}
+
+
+void PWM::setPercent(int _percent) {
+    setDuty(_percent * PWM_PERIOD / 100);
+}
+
+extern "C" {
+
+    void motor1_set_duty(uint32_t duty)     { moteur1.setDuty(duty); }
+    void motor2_set_duty(uint32_t duty)     { moteur2.setDuty(duty); }
+
+    void motor1_set_ms  (int _millisec)     { moteur1.setMillisec(_millisec); }
+    void motor2_set_ms  (int _millisec)     { moteur2.setMillisec(_millisec); }
+
+    void motor1_set_percent(int _percent)   { moteur1.setPercent(_percent); }
+    void motor2_set_percent(int _percent)   { moteur2.setPercent(_percent); }
+
+}

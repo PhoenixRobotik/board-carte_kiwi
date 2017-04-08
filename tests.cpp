@@ -34,9 +34,14 @@ void pwmTest() {
 }
 
 int main(int argc, char const *argv[]) {
-    bool eepromStatus = eepromTest();
+    bool eepromStatus = true; // eepromTest();
 
-    pwmTest();
+    // Those are equivalent
+    moteur1.setDuty     ( 150);
+    moteur1.setPercent  (  75);
+    moteur1.setMicrosec (1500);
+
+    // pwmTest();
 
     bool ledsOn = true;
     while(true) {

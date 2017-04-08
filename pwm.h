@@ -36,12 +36,13 @@ public:
     void enable();
     void disable();
 
-    void setPeriod  (uint32_t _period) { }
     void setDuty    (uint32_t _duty);//   { duty = _duty; }
 
     // More high level sets
-    void setPercent (int _percent) { }
-    void setMillisec(int _millisec){ }
+    void setPercent (int _percent);
+    void setMillisec(int _millisec);
+    void setMicrosec(uint64_t _microsec);
+    // void setPeriod  (uint32_t _period) { }
 
 
     // Getters (conversion between different sets)
@@ -71,6 +72,15 @@ extern PWM moteur2;
 
 extern "C" {
 #endif
+
+void motor1_set_duty(uint32_t duty);
+void motor2_set_duty(uint32_t duty);
+
+void motor1_set_ms  (int _millisec);
+void motor2_set_ms  (int _millisec);
+
+void motor1_set_percent(int _percent);
+void motor2_set_percent(int _percent);
 
 #ifdef __cplusplus
 }
