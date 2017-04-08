@@ -1,13 +1,7 @@
 #pragma once
 
+#include "config_macros.h"
 #include <stdint.h>
-
-// Stm32f303k8 specific !
-#define FLASH_BASE                  (0x08000000)
-#define BASE_ADDRESS                (0x0800F000)
-#define FLASH_PAGE_NUM_MAX          (16)
-#define FLASH_PAGE_SIZE             (0x400)
-#define FLASH_WRONG_DATA_WRITTEN    (0x80)
 
 #ifdef __cplusplus
 extern "C" {

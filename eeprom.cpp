@@ -1,14 +1,8 @@
 #include "eeprom.h"
 
-// #include "hardware.h"
-#include "leds.h"
-
 #include <libopencm3/stm32/flash.h>
-#include <libopencm3/stm32/f3/memorymap.h>
 
 extern "C" {
-
-
 
 // Currently only works if all the data is in the same page
 uint32_t flash_write_data(uint32_t start_address, uint32_t *input_data, uint16_t num_elements) {
@@ -54,4 +48,4 @@ void flash_read_data(uint32_t start_address, uint32_t *output_data, uint16_t num
         *((uint32_t*)output_data + i) = *((uint32_t*)start_address + i);
 }
 
-}
+}   // extern "C"
