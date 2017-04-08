@@ -3,7 +3,7 @@
 #define BP __asm__("BKPT")
 
 // RCC Clock Frequency [Hz]
-#define RCC_CLOCK_FREQ_HZ   (0'064'000'000)
+#define RCC_CLOCK_FREQ_HZ   (   64'000'000)
 
 // Interruptions = 10kHz = 100us (beaucoup ?)
 #define SYSTICK_FREQ_HZ     (       10'000)
