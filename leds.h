@@ -13,24 +13,15 @@ public:
     {
         init();
     }
-
     ~Led() { }
+    void init();
 
-    void set(bool on) {
-        on  ? gpio_set  (port, pin)
-            : gpio_clear(port, pin);
-    }
-    void toggle() {
-        gpio_toggle(port, pin);
-    }
+    void set(bool on);
+    void toggle();
 
-    void init() {
-        rcc_periph_clock_enable(RCC_GPIOF);
-        gpio_mode_setup(port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, pin);
-    }
-
-    Port::Number port;
-    Pin::Number  pin;
+private:
+    const Port::Number port;
+    const Pin::Number  pin;
 };
 
 extern Led activeLed;
