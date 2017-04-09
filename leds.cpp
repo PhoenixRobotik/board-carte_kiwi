@@ -3,11 +3,11 @@
 #include <libopencm3/stm32/gpio.h>
 
 Port::Number
-    LedsPort = Port::_F;
+    LedsPort = Port::pF;
 
 Pin::Number
-    LedActivePin = Pin::_0,
-    LedStatusPin = Pin::_1;
+    LedActivePin = Pin::p0,
+    LedStatusPin = Pin::p1;
 
 
 Led activeLed(LedsPort, LedActivePin);

@@ -6,14 +6,14 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/timer.h>
 
-PWM moteur1(Port::_B, Pin::_0,
+PWM moteur1(Port::pB, Pin::p0,
             Timer3,
-            AltFunction::_2,
+            AltFunction::f2,
             TIM_OC3);
 
-PWM moteur2(Port::_A, Pin::_6,
+PWM moteur2(Port::pA, Pin::p6,
             Timer3,
-            AltFunction::_2,
+            AltFunction::f2,
             TIM_OC1);
 
 
