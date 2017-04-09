@@ -13,7 +13,7 @@ bool eepromTest() {
     DataOnEEPROM<TestEepromData> testData;
     TestEepromData data = testData.load(true);
     // Bool trim (stm32 silicon bug ?)
-    data.on = (data.on == 0) ? false : true;
+    data.on = (data.on & 0b1);
 
     TestEepromData newData;
     newData.on = !data.on;
