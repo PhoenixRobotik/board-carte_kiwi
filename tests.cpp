@@ -36,21 +36,6 @@ void pwmTest() {
     moteur2.setDuty(150);
 }
 
-bool CANBusTest() {
-    theCANBus().init();
-
-    theSystem().sleep_ms(2000);
-    std::vector<uint8_t> data;
-    data = std::vector<uint8_t>(8, 0x00);
-    theCANBus().send(data.data());
-    theSystem().sleep_ms(2000);
-    data = std::vector<uint8_t>(8, 0xFF);
-    theCANBus().send(data.data());
-
-
-    return true;
-}
-
 int main(int argc, char const *argv[]) {
     bool eepromStatus = false; // eepromTest();
 
@@ -61,11 +46,18 @@ int main(int argc, char const *argv[]) {
 
     moteur2.setMicrosec (1500);
     // pwmTest();
-    CANBusTest();
+
+    theCANBus().init();
+    std::vector<uint8_t> data;
 
     bool ledsOn = true;
+    int i = 0;
     while(true) {
         activeLed.set(eepromStatus ? true : ledsOn);
+
+        data = std::vector<uint8_t>(8, i++);
+        theCANBus().send(data.data());
+
         // statusLed.set(eepromStatus);
         delay_ms(ledsOn ? 100 : 100);
         ledsOn = !ledsOn;
