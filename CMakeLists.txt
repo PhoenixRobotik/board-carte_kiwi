@@ -16,6 +16,7 @@ include(${GenericCmakeLists})
 # Déclaration des sources de la librairie
 add_library(${PROJECT_NAME}Lib STATIC
     definitions/timers_cpp.cpp
+    can.cpp
     clock.cpp
     eeprom.cpp
     leds.cpp
