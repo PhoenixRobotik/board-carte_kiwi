@@ -1,7 +1,10 @@
+#include "can.h"
 #include "clock.h"
-#include "leds.h"
 #include "eeprom.h"
+#include "leds.h"
 #include "pwm.h"
+
+#include <vector>
 
 struct TestEepromData {
     bool on;
@@ -33,20 +36,37 @@ void pwmTest() {
     moteur2.setDuty(150);
 }
 
+bool CANBusTest() {
+    theCANBus().init();
+
+    theSystem().sleep_ms(2000);
+    std::vector<uint8_t> data;
+    data = std::vector<uint8_t>(8, 0x00);
+    theCANBus().send(data.data());
+    theSystem().sleep_ms(2000);
+    data = std::vector<uint8_t>(8, 0xFF);
+    theCANBus().send(data.data());
+
+
+    return true;
+}
+
 int main(int argc, char const *argv[]) {
-    bool eepromStatus = true; // eepromTest();
+    bool eepromStatus = false; // eepromTest();
 
     // Those are equivalent
     moteur1.setDuty     ( 150);
     moteur1.setPercent  (  75);
     moteur1.setMicrosec (1500);
 
+    moteur2.setMicrosec (1500);
     // pwmTest();
+    CANBusTest();
 
     bool ledsOn = true;
     while(true) {
         activeLed.set(eepromStatus ? true : ledsOn);
-        statusLed.set(eepromStatus);
+        // statusLed.set(eepromStatus);
         delay_ms(ledsOn ? 100 : 100);
         ledsOn = !ledsOn;
     }
