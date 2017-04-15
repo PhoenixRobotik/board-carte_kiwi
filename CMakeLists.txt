@@ -21,6 +21,7 @@ add_library(${PROJECT_NAME}Lib STATIC
     eeprom.cpp
     leds.cpp
     pwm.cpp
+    uart.cpp
 )
 # Includes publics
 target_include_directories(${PROJECT_NAME}Lib INTERFACE
