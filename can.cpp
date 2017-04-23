@@ -33,9 +33,12 @@ void CANBus::init() {
     gpio_set_af(    CANPort, GPIO_AF9,
                     CANPinRx | CANPinTx);
 
-    // STM32F3 CAN on 36MHz configured APB1 peripheral clock
-    // 36MHz / 2 -> 18MHz
-    // 18MHz / (1tq + 10tq + 7tq) = 1MHz => 1Mbit
+    // STM32F3 CAN on APB1 peripheral clock
+    // APB1 clock period : 1/32MHz
+    // baud rate prescaler = 2, so usefull clock : 16MHz
+    // We want 1Mbit baud rate, so we need 16MHz/1MHz = 16tq
+    // We want sample point at 87.5% (CANopen prefered value)
+    // 87.5% * 16 = 14, so TS1 = 14 - 1 = 13 and TS2 = 16 - 14 = 2
     can_init(CAN,               // Interface
              false,             // Time triggered communication mode.
              true,              // Automatic bus-off management.
@@ -44,8 +47,8 @@ void CANBus::init() {
              false,             // Receive FIFO locked mode.
              false,             // Transmit FIFO priority.
              CAN_BTR_SJW_1TQ,   // Resynchronization time quanta jump width
-             CAN_BTR_TS1_10TQ,  // Time segment 1 time quanta width
-             CAN_BTR_TS2_7TQ,   // Time segment 2 time quanta width
+             CAN_BTR_TS1_13TQ,  // Time segment 1 time quanta width
+             CAN_BTR_TS2_2TQ,   // Time segment 2 time quanta width
              2,                 // Prescaler
              false,             // Loopback
              false);            // Silent
