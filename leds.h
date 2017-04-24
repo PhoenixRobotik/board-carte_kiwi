@@ -24,18 +24,12 @@ private:
     const Pin::Number  pin;
 };
 
-extern Led activeLed;
-extern Led statusLed;
-
-
 extern "C" {
 #endif
 
-void led_active_set(bool on);
-void led_active_toggle();
-
-void led_status_set(bool on);
-void led_status_toggle();
+struct Led;
+void led_set    (Led* led, bool on);
+void led_toggle (Led* led);
 
 #ifdef __cplusplus
 }

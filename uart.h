@@ -44,11 +44,6 @@ private:
     std::vector<uint8_t> m_receptionBuffer;
 };
 
-extern USART kiwiUSART1;
-extern USART kiwiUSART2;
-
-
-
 extern "C" {
 #endif
 

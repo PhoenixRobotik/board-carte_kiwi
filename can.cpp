@@ -84,7 +84,6 @@ bool CANBus::send(uint8_t data[8], int retries) {
 
         while((CAN_TSR(CAN) & CAN_TSR_RQCP0) == 0);
 
-        statusLed.toggle();
         return true;
 
 

@@ -90,13 +90,8 @@ void PWM::setPercent(int _percent) {
 
 extern "C" {
 
-    void motor1_set_duty(uint32_t duty)     { moteur1.setDuty(duty); }
-    void motor2_set_duty(uint32_t duty)     { moteur2.setDuty(duty); }
-
-    void motor1_set_ms  (int _millisec)     { moteur1.setMillisec(_millisec); }
-    void motor2_set_ms  (int _millisec)     { moteur2.setMillisec(_millisec); }
-
-    void motor1_set_percent(int _percent)   { moteur1.setPercent(_percent); }
-    void motor2_set_percent(int _percent)   { moteur2.setPercent(_percent); }
+    void pwm_set_duty   (PWM* pwm, uint32_t duty)   { pwm->setDuty(duty); }
+    void pwm_set_ms     (PWM* pwm, int _millisec)   { pwm->setMillisec(_millisec); }
+    void pwm_set_percent(PWM* pwm, int _percent)    { pwm->setPercent(_percent); }
 
 }

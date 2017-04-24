@@ -6,6 +6,45 @@
 
 #include <vector>
 
+class BoardKiwi
+: public System {
+public:
+    BoardKiwi()
+    : System()
+    , activeLed(Port::pF, Pin::p0)
+    , statusLed(Port::pF, Pin::p1)
+    , moteur1(Port::pB, Pin::p0,
+            Timer3,
+            AltFunction::f2,
+            TIM_OC3)
+    , moteur2(Port::pA, Pin::p6,
+            Timer3,
+            AltFunction::f2,
+            TIM_OC1)
+    // , usart1(USART1, Port::pB, Pin::p7, Port::pB, Pin::p6)
+    // , usart2(USART2, Port::pB, Pin::p4, Port::pB, Pin::p3)
+    { }
+
+    Led activeLed, statusLed;
+
+    PWM moteur1, moteur2;
+
+    // USART usart1;
+    // USART usart2;
+
+} kiwi;
+
+
+
+
+
+
+
+
+
+
+
+
 struct TestEepromData {
     bool on;
 };
@@ -23,28 +62,30 @@ bool eepromTest() {
 
 
 void pwmTest() {
-    moteur1.setDuty(150);
-    theSystem().sleep_ms(1000);
-    moteur1.setDuty(110);
-    theSystem().sleep_ms(500);
-    moteur1.setDuty(150);
+    kiwi.moteur1.setDuty(150);
+    kiwi.sleep_ms(1000);
+    kiwi.moteur1.setDuty(110);
+    kiwi.sleep_ms(500);
+    kiwi.moteur1.setDuty(150);
 
-    moteur2.setDuty(150);
-    theSystem().sleep_ms(1000);
-    moteur2.setDuty(110);
-    theSystem().sleep_ms(500);
-    moteur2.setDuty(150);
+    kiwi.moteur2.setDuty(150);
+    kiwi.sleep_ms(1000);
+    kiwi.moteur2.setDuty(110);
+    kiwi.sleep_ms(500);
+    kiwi.moteur2.setDuty(150);
 }
 
 int main(int argc, char const *argv[]) {
+    // BoardKiwi kiwi;
+
     bool eepromStatus = false; // eepromTest();
 
     // Those are equivalent
-    moteur1.setDuty     ( 150);
-    moteur1.setPercent  (  75);
-    moteur1.setMicrosec (1500);
+    kiwi.moteur1.setDuty     ( 150);
+    kiwi.moteur1.setPercent  (  75);
+    kiwi.moteur1.setMicrosec (1500);
 
-    moteur2.setMicrosec (1500);
+    kiwi.moteur2.setMicrosec (1500);
     // pwmTest();
 
     theCANBus().init();
@@ -53,13 +94,13 @@ int main(int argc, char const *argv[]) {
     bool ledsOn = true;
     int i = 0;
     while(true) {
-        activeLed.set(eepromStatus ? true : ledsOn);
+        kiwi.activeLed.set(eepromStatus ? true : ledsOn);
 
         data = std::vector<uint8_t>(8, i++);
         theCANBus().send(data.data());
 
-        // statusLed.set(eepromStatus);
-        delay_ms(ledsOn ? 100 : 100);
+        // kiwi.statusLed.set(eepromStatus);
+        kiwi.sleep_ms(ledsOn ? 100 : 100);
         ledsOn = !ledsOn;
     }
 

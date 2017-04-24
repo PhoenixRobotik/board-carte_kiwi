@@ -7,17 +7,6 @@
 
 void* __dso_handle;
 
-class SystemInitializer {
-public:
-    SystemInitializer() { theSystem(); }
-};
-SystemInitializer initializeTheSystemNow;
-
-System& theSystem() {
-    static System theOneAndOnlySystem;
-    return theOneAndOnlySystem;
-}
-
 System::System() {
     rcc_clock_setup_hsi(&rcc_hsi_8mhz[RCC_CLOCK_64MHZ]);
 
@@ -35,7 +24,6 @@ System::System() {
     rcc_periph_clock_enable(RCC_GPIOD);
     rcc_periph_clock_enable(RCC_GPIOE);
     rcc_periph_clock_enable(RCC_GPIOF);
-
 }
 
 int32_t System::getSysTick() {
@@ -51,20 +39,3 @@ void System::sleep_us(int32_t us) {
     int count_max = systick_count + MICROS_TO_SYSTICK(us);
     while(systick_count < count_max) {}
 }
-
-
-extern "C" {
-    // LibOpenCm3 export
-    void sys_tick_handler() {
-        theSystem().systick_count++;
-    }
-
-    int get_systick() {
-        return theSystem().getSysTick();
-    }
-
-    void delay_ms(unsigned int ms) {
-        return theSystem().sleep_ms(ms);
-    }
-}
-

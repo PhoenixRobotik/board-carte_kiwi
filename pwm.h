@@ -64,23 +64,14 @@ private:
     uint32_t duty = 0;
 };
 
-// Moteurs
-extern PWM moteur1;
-extern PWM moteur2;
-// Led PWM
-// extern PWM ledActFloat;
 
 extern "C" {
 #endif
 
-void motor1_set_duty(uint32_t duty);
-void motor2_set_duty(uint32_t duty);
-
-void motor1_set_ms  (int _millisec);
-void motor2_set_ms  (int _millisec);
-
-void motor1_set_percent(int _percent);
-void motor2_set_percent(int _percent);
+struct PWM;
+void pwm_set_duty   (PWM* pwm, uint32_t duty);
+void pwm_set_ms     (PWM* pwm, int _millisec);
+void pwm_set_percent(PWM* pwm, int _percent);
 
 #ifdef __cplusplus
 }
