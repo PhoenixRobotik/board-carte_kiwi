@@ -19,6 +19,7 @@ add_library(${PROJECT_NAME}Lib STATIC
     can.cpp
     clock.cpp
     eeprom.cpp
+    hall.cpp
     leds.cpp
     pwm.cpp
     uart.cpp
