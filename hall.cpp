@@ -22,15 +22,15 @@ uint32_t rotation_speed_sensor2 = 0;
 
 
 void Hall::init() {
-    // Enable timer clock
-    rcc_periph_clock_enable(timer.ClockEnable);
-    Hall::init_timer();
-
     // Enable GPIO clock
     rcc_periph_clock_enable(RCC_GPIOA); // TODO pass this
     Hall::init_gpio(portH1, pinH1);
     Hall::init_gpio(portH2, pinH2);
     Hall::init_gpio(portH3, pinH3);
+
+    // Enable timer clock
+    rcc_periph_clock_enable(timer.ClockEnable);
+    Hall::init_timer();
 }
 
 void Hall::init_timer() {
