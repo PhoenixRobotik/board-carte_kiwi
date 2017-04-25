@@ -20,6 +20,7 @@ Hall hallsensor2(Port::pA, Pin::p0,
 uint32_t rotation_speed_sensor1 = 0;
 uint32_t rotation_speed_sensor2 = 0;
 
+// TODO : need to handle counter overflow
 
 void Hall::init() {
     // Enable GPIO clock
@@ -104,9 +105,7 @@ void tim1_cc_isr(void)
   if (timer_interrupt_source(TIM1, TIM_SR_CC1IF) == true)
   {
     timer_clear_flag(TIM1, TIM_SR_CC1IF);
-    // don't trust this equation, it's here only for test
-    // maths will come…
-    rotation_speed_sensor1 = 100000/TIM_CCR1(TIM1)*20*3;
+    rotation_speed_sensor1 = 75*3.14159*50000/TIM_CCR1(TIM1)/60;
     //rotation_speed_sensor1 += 1;
 
   } else {
@@ -121,9 +120,7 @@ void tim2_isr(void)
   if (timer_interrupt_source(TIM2, TIM_SR_CC1IF) == true)
   {
     timer_clear_flag(TIM2, TIM_SR_CC1IF);
-    // don't trust this equation, it's here only for test
-    // maths will come…
-    rotation_speed_sensor2 = 100000/TIM_CCR1(TIM2)*20*3;
+    rotation_speed_sensor2 = 75*3.14159*50000/TIM_CCR1(TIM2)/60;
     //rotation_speed_sensor2 += 1;
 
   } else {
