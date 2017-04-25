@@ -15,7 +15,7 @@ struct Timer {
 };
 
 // Timer1 is special and not really handled here… I think
-// extern Timer Timer1;
+extern Timer Timer1;
 extern Timer Timer2;
 extern Timer Timer3;
 extern Timer Timer4;
