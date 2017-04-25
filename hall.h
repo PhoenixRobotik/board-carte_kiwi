@@ -28,7 +28,7 @@ public:
     , altFunction(_altFunction)
     {
         init();
-        enable(); // But with dutycycle = 0
+        enable();
     }
 
     ~Hall() {
@@ -42,6 +42,9 @@ public:
     void disable();
 
 private:
+    void init_timer();
+    void init_gpio(Port::Number port, Pin::Number pin);
+    
     const Port::Number portH1;
     const Pin::Number  pinH1;
     const Port::Number portH2;

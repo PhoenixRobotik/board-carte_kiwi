@@ -17,18 +17,23 @@ Hall hallsensor2(Port::pA, Pin::p0,
             Timer2,
             AltFunction::f1);
 
-uint32_t rotation_speed_sensor1;
-uint32_t rotation_speed_sensor2;
+uint32_t rotation_speed_sensor1 = 0;
+uint32_t rotation_speed_sensor2 = 0;
 
 
 void Hall::init() {
     // Enable timer clock
     rcc_periph_clock_enable(timer.ClockEnable);
+    Hall::init_timer();
+
     // Enable GPIO clock
     rcc_periph_clock_enable(RCC_GPIOA); // TODO pass this
-    // Reset timer peripheral to defaults
-    // rcc_periph_reset_pulse(timer.Reset);
+    Hall::init_gpio(portH1, pinH1);
+    Hall::init_gpio(portH2, pinH2);
+    Hall::init_gpio(portH3, pinH3);
+}
 
+void Hall::init_timer() {
     // Reset timer peripheral
     timer_set_mode (timer.Peripheral,
                     TIM_CR1_CKD_CK_INT,
@@ -42,7 +47,7 @@ void Hall::init() {
     timer_set_prescaler         (timer.Peripheral, 126); //need to be changed
 
     // That's specific to Timer1
-    // timer_enable_break_main_output(timer.Peripheral);
+    timer_enable_break_main_output(timer.Peripheral);
 
     // timer_set_clock_division(timer.Peripheral, TIM_CR1_CKD_CK_INT);
     timer_set_ti1_ch123_xor(timer.Peripheral);
@@ -55,53 +60,37 @@ void Hall::init() {
     //timer_ic_set_prescaler(timer.Peripheral, TIM_IC1, TIM_IC_PSC_OFF);
     timer_ic_set_filter(timer.Peripheral, TIM_IC1, TIM_IC_DTF_DIV_32_N_8);
 
+    timer_set_counter(timer.Peripheral, 0);
+    
     nvic_set_priority(timer.InterruptId, 0);
-    nvic_enable_irq(timer.InterruptId);
-    timer_enable_irq(timer.Peripheral,TIM_DIER_CC1IE);
+}
 
-    // Setup GPIO H1
+void  Hall::init_gpio(Port::Number port, Pin::Number pin) {
     gpio_set_output_options(
-                portH1, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ,
-                pinH1);
+                port, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ,
+                pin);
     gpio_mode_setup(
-                portH1, GPIO_MODE_AF, GPIO_PUPD_NONE,
-                pinH1);
-    gpio_set_af(portH1, altFunction,
-                pinH1);
-
-    // Setup GPIO H2
-    gpio_set_output_options(
-                portH2, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ,
-                pinH2);
-    gpio_mode_setup(
-                portH2, GPIO_MODE_AF, GPIO_PUPD_NONE,
-                pinH2);
-    gpio_set_af(portH2, altFunction,
-                pinH2);
-
-    // Setup GPIO H3
-    gpio_set_output_options(
-                portH3, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ,
-                pinH3);
-    gpio_mode_setup(
-                portH3, GPIO_MODE_AF, GPIO_PUPD_NONE,
-                pinH3);
-    gpio_set_af(portH3, altFunction,
-                pinH3);
-
-    //timer_set_counter(timer.Peripheral, 0);
-    timer_enable_counter(timer.Peripheral);
-    timer_ic_enable(timer.Peripheral, TIM_IC1); // move this
+                port, GPIO_MODE_AF, GPIO_PUPD_NONE,
+                pin);
+    gpio_set_af(port, altFunction,
+                pin);
 }
 
 void Hall::enable() {
     enabled = true;
-    // code here
+    nvic_enable_irq(timer.InterruptId);
+    timer_enable_irq(timer.Peripheral,TIM_DIER_CC1IE);
+    timer_ic_enable(timer.Peripheral, TIM_IC1);
+    timer_enable_counter(timer.Peripheral);
 }
 
 void Hall::disable(){
     enabled = false;
-    // code here
+    timer_disable_counter(timer.Peripheral);
+    timer_ic_disable(timer.Peripheral, TIM_IC1);
+    timer_disable_irq(timer.Peripheral,TIM_DIER_CC1IE);
+    // if timer is used for other stuff remove this
+    nvic_disable_irq(timer.InterruptId);
 }
 
 void tim1_cc_isr(void)
