@@ -70,34 +70,21 @@ void CANBus::deinit() {
 }
 
 
-bool CANBus::send(uint8_t data[8], int retries) {
+bool CANBus::send(uint32_t id, uint8_t* data, size_t dataSize) {
     m_id = 0;
 
-    do {
-        volatile int statusCAN = can_transmit(
-            CAN,    // canport
-            m_id,   // can id
-            false,  // extended id
-            false,  // request transmit
-            4,      // data length
-            data);  // data
+    volatile int statusCAN = can_transmit(
+        CAN,    // canport
+        m_id,   // can id
+        false,  // extended id
+        false,  // request transmit
+        4,      // data length
+        data);  // data
 
-        while((CAN_TSR(CAN) & CAN_TSR_RQCP0) == 0);
+    // Timeout of some sort ?
+    while((CAN_TSR(CAN) & CAN_TSR_RQCP0) == 0);
 
-        return true;
-
-
-
-        // while((CAN_TSR(CAN) & CAN_TSR_RQCP0) == 0 && false) {
-        //     statusLed.toggle();
-        //     theSystem().sleep_ms(20);
-        // }
-        // activeLed.set(true);
-
-        // if ((CAN_TSR(CAN) & CAN_TSR_TXOK0)) {
-        //     return true;    // can ok
-        // }
-    } while (retries-- > 0);
+    return true;
 
     return false;
 }

@@ -12,7 +12,19 @@ public:
     void init();
     void deinit();
 
-    bool send(uint8_t data[8], int retries = 0);
+    bool send(uint32_t id, uint8_t* data, size_t dataSize);
+
+    template<typename T>
+    bool send(uint32_t id, T data) {
+        static_assert(sizeof(T) <= 8);
+        return send(id, &data, sizeof(T));
+    }
+    template<typename T>
+    bool send(uint32_t id, T* data) {
+        static_assert(sizeof(T) <= 8);
+        return send(id, data, sizeof(T));
+    }
+
     bool receive();
 
     // should enable filtering

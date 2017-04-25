@@ -98,7 +98,7 @@ int main(int argc, char const *argv[]) {
         kiwi.activeLed.set(eepromStatus ? true : ledsOn);
 
         data = std::vector<uint8_t>(2, i++);
-        theCANBus().send((uint8_t*) (&rotation_speed));
+        theCANBus().send(0, (uint8_t*) (&rotation_speed));
 
         // kiwi.statusLed.set(eepromStatus);
         kiwi.sleep_ms(ledsOn ? 100 : 100);
