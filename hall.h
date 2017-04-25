@@ -41,6 +41,11 @@ public:
     void enable();
     void disable();
 
+    float get_pulse_period_ms();
+    uint32_t get_pulse_count();
+
+    void CC_interrupt_handler(void);
+
 private:
     void init_timer();
     void init_gpio(Port::Number port, Pin::Number pin);
@@ -56,6 +61,8 @@ private:
     const AltFunction::Number altFunction;
 
     bool enabled = false;
+    uint16_t pulse_time = 0;
+    uint32_t pulse_count = 0;
 };
 
 // Sensors

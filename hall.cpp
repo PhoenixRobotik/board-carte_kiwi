@@ -88,7 +88,7 @@ void Hall::enable() {
     timer_enable_counter(timer.Peripheral);
 }
 
-void Hall::disable(){
+void Hall::disable() {
     enabled = false;
     timer_disable_counter(timer.Peripheral);
     timer_ic_disable(timer.Peripheral, TIM_IC1);
@@ -98,34 +98,34 @@ void Hall::disable(){
 }
 
 
+float Hall::get_pulse_period_ms() {
+    return 1000*pulse_time/50000;
+}
+
+uint32_t Hall::get_pulse_count() {
+    return pulse_count;
+}
+
+void Hall::CC_interrupt_handler(void) {
+    //if (timer_get_flag(TIM2, TIM_SR_CC1IF) == true)
+    if (timer_interrupt_source(TIM1, TIM_SR_CC1IF) == true)
+    {
+        timer_clear_flag(TIM1, TIM_SR_CC1IF);
+        pulse_time   = TIM_CCR1(TIM1);
+        pulse_count += 1;
+    } else {
+        ; // should never fall here
+    }
+}
+
 void tim1_cc_isr(void)
 {
-
-  //if (timer_get_flag(TIM2, TIM_SR_CC1IF) == true)
-  if (timer_interrupt_source(TIM1, TIM_SR_CC1IF) == true)
-  {
-    timer_clear_flag(TIM1, TIM_SR_CC1IF);
-    rotation_speed_sensor1 = 75*3.14159*50000/TIM_CCR1(TIM1)/60;
-    //rotation_speed_sensor1 += 1;
-
-  } else {
-    ; // should never fall here
-  }
+    hallsensor1.CC_interrupt_handler();
 }
 
 void tim2_isr(void)
 {
-
-  //if (timer_get_flag(TIM2, TIM_SR_CC1IF) == true)
-  if (timer_interrupt_source(TIM2, TIM_SR_CC1IF) == true)
-  {
-    timer_clear_flag(TIM2, TIM_SR_CC1IF);
-    rotation_speed_sensor2 = 75*3.14159*50000/TIM_CCR1(TIM2)/60;
-    //rotation_speed_sensor2 += 1;
-
-  } else {
-    ; // should never fall here
-  }
+    hallsensor2.CC_interrupt_handler();
 }
 
 extern "C" {
