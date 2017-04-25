@@ -35,7 +35,20 @@ public:
 
 } kiwi;
 
+extern "C" {
+    // LibOpenCm3 export
+    void sys_tick_handler() {
+        kiwi.systick_count++;
+    }
 
+    int get_systick() {
+        return kiwi.getSysTick();
+    }
+
+    void delay_ms(unsigned int ms) {
+        return kiwi.sleep_ms(ms);
+    }
+}
 
 
 
@@ -97,15 +110,19 @@ int main(int argc, char const *argv[]) {
     while(true) {
         kiwi.activeLed.set(eepromStatus ? true : ledsOn);
 
-        data = std::vector<uint8_t>(2, i++);
-        theCANBus().send(1, (uint8_t*) (&rotation_speed_sensor1), 4);
-        theCANBus().send(2, (uint8_t*) (&rotation_speed_sensor2), 4);
-        for (int j = 0; j < (1<<20); ++j)
-        {
-            __asm__("NOP");
-        }
+        data = std::vector<uint8_t>(4, i++);
+        uint32_t rotation_speed_wheel1 = /*75*3.14159**/1000/(60*hallsensor1.get_pulse_period_ms());
+        uint32_t rotation_speed_wheel2 = /*75*3.14159**/1000/(60*hallsensor2.get_pulse_period_ms());
+        theCANBus().send(1, rotation_speed_wheel1);
+        //theCANBus().send(2, rotation_speed_wheel2);
+        uint32_t distance_wheel1 = /*75*3.14159/60**/hallsensor1.get_pulse_count();
+        uint32_t distance_wheel2 = /*75*3.14159/60**/hallsensor2.get_pulse_count();
+        theCANBus().send(3, distance_wheel1);
+        //theCANBus().send(4, distance_wheel2);
+        //theCANBus().send(5, data.data(), 4);
+
         // kiwi.statusLed.set(eepromStatus);
-        // kiwi.sleep_ms(ledsOn ? 100 : 100);
+        kiwi.sleep_ms(ledsOn ? 100 : 100);
         ledsOn = !ledsOn;
     }
 
