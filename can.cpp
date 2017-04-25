@@ -79,7 +79,7 @@ bool CANBus::send(uint8_t data[8], int retries) {
             m_id,   // can id
             false,  // extended id
             false,  // request transmit
-            8,      // data length
+            4,      // data length
             data);  // data
 
         while((CAN_TSR(CAN) & CAN_TSR_RQCP0) == 0);

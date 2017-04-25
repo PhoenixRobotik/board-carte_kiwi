@@ -17,14 +17,14 @@ Hall hallsensor2(Port::pA, Pin::p0,
             Timer2,
             AltFunction::f1);
 
+uint32_t rotation_speed;
+
 
 void Hall::init() {
     // Enable timer clock
     rcc_periph_clock_enable(timer.ClockEnable);
     // Enable GPIO clock
     rcc_periph_clock_enable(RCC_GPIOA); // TODO pass this
-    // Enable timer interrupt
-    nvic_enable_irq(timer.InterruptId);
     // Reset timer peripheral to defaults
     // rcc_periph_reset_pulse(timer.Reset);
 
@@ -71,6 +71,8 @@ void Hall::init() {
                 pinH3);
 
     timer_enable_break_main_output(timer.Peripheral); // That's specific to Timer1
+
+    //timer_set_clock_division(timer.Peripheral, TIM_CR1_CKD_CK_INT);
     timer_set_ti1_ch123_xor(timer.Peripheral);
     timer_slave_set_trigger(timer.Peripheral, TIM_SMCR_TS_TI1F_ED);
     timer_slave_set_mode(timer.Peripheral, TIM_SMCR_SMS_RM);
@@ -81,6 +83,13 @@ void Hall::init() {
     timer_ic_set_prescaler(timer.Peripheral, TIM_IC1, TIM_IC_PSC_OFF);
     timer_ic_set_filter(timer.Peripheral, TIM_IC1, TIM_IC_DTF_DIV_32_N_8);
 
+    nvic_set_priority(timer.InterruptId, 0);
+    nvic_enable_irq(timer.InterruptId);
+    timer_enable_irq(timer.Peripheral,TIM_DIER_CC1IE);
+
+    //timer_set_counter(timer.Peripheral, 0);
+    timer_enable_counter(timer.Peripheral);
+    timer_ic_enable(timer.Peripheral, TIM_IC1); // move this
 }
 
 void Hall::enable() {
@@ -91,6 +100,28 @@ void Hall::enable() {
 void Hall::disable(){
     enabled = false;
     // code here
+}
+
+void tim1_cc_isr(void)
+{
+
+}
+
+void tim2_isr(void)
+{
+
+  //if (timer_get_flag(TIM2, TIM_SR_CC1IF) == true)
+  if (timer_interrupt_source(TIM2, TIM_SR_CC1IF) == true)
+  {
+    timer_clear_flag(TIM2, TIM_SR_CC1IF);
+    // don't trust this equation, it's here only for test
+    // maths will come…
+    rotation_speed = 100000/TIM_CCR1(TIM2)*20*3;
+    //rotation_speed += 1;
+
+  } else {
+    ; // should never fall here
+  }
 }
 
 extern "C" {

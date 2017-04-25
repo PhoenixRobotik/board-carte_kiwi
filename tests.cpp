@@ -3,6 +3,7 @@
 #include "eeprom.h"
 #include "leds.h"
 #include "pwm.h"
+#include "hall.h"
 
 #include <vector>
 
@@ -96,8 +97,8 @@ int main(int argc, char const *argv[]) {
     while(true) {
         kiwi.activeLed.set(eepromStatus ? true : ledsOn);
 
-        data = std::vector<uint8_t>(8, i++);
-        theCANBus().send(data.data());
+        data = std::vector<uint8_t>(2, i++);
+        theCANBus().send((uint8_t*) (&rotation_speed));
 
         // kiwi.statusLed.set(eepromStatus);
         kiwi.sleep_ms(ledsOn ? 100 : 100);

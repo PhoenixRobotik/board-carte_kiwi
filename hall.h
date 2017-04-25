@@ -58,6 +58,7 @@ private:
 // Sensors
 extern Hall hallsensor1;
 extern Hall hallsensor2;
+extern uint32_t rotation_speed;
 
 extern "C" {
 #endif
