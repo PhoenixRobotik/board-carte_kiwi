@@ -43,9 +43,9 @@ void CANBus::init() {
              false,             // Time triggered communication mode.
              true,              // Automatic bus-off management.
              false,             // Automatic wakeup mode.
-             true,              // No automatic retransmission.
+             false,             // No automatic retransmission.
              false,             // Receive FIFO locked mode.
-             false,             // Transmit FIFO priority.
+             true,              // Transmit FIFO priority.
              CAN_BTR_SJW_1TQ,   // Resynchronization time quanta jump width
              CAN_BTR_TS1_13TQ,  // Time segment 1 time quanta width
              CAN_BTR_TS2_2TQ,   // Time segment 2 time quanta width
@@ -71,21 +71,38 @@ void CANBus::deinit() {
 
 
 bool CANBus::send(uint32_t id, uint8_t* data, size_t dataSize) {
+    int32_t retries = maxSendRetries;
+    int statusCAN;
 
-    volatile int statusCAN = can_transmit(
-        CAN,    // canport
-        id,     // can id
-        false,  // extended id
-        false,  // request transmit
-        4,      // data length
-        data);  // data
+    while (can_available_mailbox(CAN) == false);
 
-    // Timeout of some sort ?
-    while((CAN_TSR(CAN) & CAN_TSR_RQCP0) == 0);
+    do {
+
+        statusCAN = can_transmit(
+            CAN,      // canport
+            id,       // can id
+            false,    // extended id
+            false,    // request transmit
+            dataSize, // data length
+            data);    // data
+
+    } while (statusCAN < 0);
+
+
+    switch(statusCAN)
+    {
+        case 0:
+            while((CAN_TSR(CAN) & CAN_TSR_RQCP0) == 0);
+            break;
+        case 1:
+            while((CAN_TSR(CAN) & CAN_TSR_RQCP1) == 0);
+            break;
+        case 2:
+            while((CAN_TSR(CAN) & CAN_TSR_RQCP2) == 0);
+            break;
+    }
 
     return true;
-
-    return false;
 }
 bool CANBus::receive() {
     return false;

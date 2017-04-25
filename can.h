@@ -9,6 +9,8 @@
 class CANBus
 {
 public:
+    static const int32_t maxSendRetries = 2500;
+
     void init();
     void deinit();
 
@@ -17,12 +19,12 @@ public:
     template<typename T>
     bool send(uint32_t id, T data) {
         static_assert(sizeof(T) <= 8);
-        return send(id, &data, sizeof(T));
+        return send(id, (uint8_t*)&data, sizeof(T));
     }
     template<typename T>
     bool send(uint32_t id, T* data) {
         static_assert(sizeof(T) <= 8);
-        return send(id, data, sizeof(T));
+        return send(id, (uint8_t*)data, sizeof(T));
     }
 
     bool receive();
