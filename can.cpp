@@ -71,11 +71,10 @@ void CANBus::deinit() {
 
 
 bool CANBus::send(uint32_t id, uint8_t* data, size_t dataSize) {
-    m_id = 0;
 
     volatile int statusCAN = can_transmit(
         CAN,    // canport
-        m_id,   // can id
+        id,   // can id
         false,  // extended id
         false,  // request transmit
         4,      // data length
