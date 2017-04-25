@@ -43,8 +43,11 @@ void Hall::init_timer() {
     timer_set_repetition_counter(timer.Peripheral, 0);
     timer_enable_preload        (timer.Peripheral);
     timer_continuous_mode       (timer.Peripheral);
-    timer_set_period            (timer.Peripheral, 65535); //need to be changed
-    timer_set_prescaler         (timer.Peripheral, 126); //need to be changed
+    // we use 16bit width counter even if the timer is capable of 32bit
+    timer_set_period            (timer.Peripheral, (1<<16) - 1);
+    // 64MHz/1280 = 50kHz, wich means a minimal detection speed of ~3mm/s
+    // and a resolution of 0.1mm with a wheel diameter of 75mm and 60 pulses per tour
+    timer_set_prescaler         (timer.Peripheral, 1280);
 
     // That's specific to Timer1
     timer_enable_break_main_output(timer.Peripheral);
@@ -93,8 +96,10 @@ void Hall::disable(){
     nvic_disable_irq(timer.InterruptId);
 }
 
+
 void tim1_cc_isr(void)
 {
+
   //if (timer_get_flag(TIM2, TIM_SR_CC1IF) == true)
   if (timer_interrupt_source(TIM1, TIM_SR_CC1IF) == true)
   {
