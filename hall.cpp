@@ -99,7 +99,7 @@ void Hall::disable() {
 }
 
 float Hall::get_pulse_period_ms() {
-    return 1000*pulse_time/HALL_SAMPLE_FREQ_HZ;
+    return (1000.0*pulse_time)/HALL_SAMPLE_FREQ_HZ;
 }
 
 int32_t Hall::get_pulse_count() {
