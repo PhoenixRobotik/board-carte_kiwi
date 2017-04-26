@@ -59,7 +59,7 @@ void Hall::init_timer() {
     timer_slave_set_mode(timer.Peripheral, TIM_SMCR_SMS_RM);
 
     timer_ic_disable(timer.Peripheral, TIM_IC1);
-    timer_ic_set_polarity(timer.Peripheral, TIM_IC1, TIM_IC_RISING); // or TIM_IC_BOTH ?
+    timer_ic_set_polarity(timer.Peripheral, TIM_IC1, TIM_IC_BOTH); // or TIM_IC_BOTH ?
     timer_ic_set_input(timer.Peripheral, TIM_IC1, TIM_IC_IN_TRC);
     //timer_ic_set_prescaler(timer.Peripheral, TIM_IC1, TIM_IC_PSC_OFF);
     timer_ic_set_filter(timer.Peripheral, TIM_IC1, TIM_IC_DTF_DIV_32_N_8);
@@ -131,7 +131,13 @@ int Hall::compute_and_get_direction() {
     } else if (i == last_toggled_gpio) {
         direction = - direction;
     } else {
-        direction = (i > last_toggled_gpio ? 1 : -1);
+        direction = i - last_toggled_gpio;
+        if (direction == 2) {
+            direction = -1;
+        }
+        if (direction == -2) {
+            direction = 1;
+        }
     }
 
     last_toggled_gpio = i;
