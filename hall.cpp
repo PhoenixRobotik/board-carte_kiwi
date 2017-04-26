@@ -144,11 +144,11 @@ int Hall::compute_and_get_direction() {
 }
 
 void Hall::CC_interrupt_handler(void) {
-    //if (timer_get_flag(TIM2, TIM_SR_CC1IF) == true)
-    if (timer_interrupt_source(TIM1, TIM_SR_CC1IF) == true)
+    //if (timer_get_flag(timer.Peripheral, TIM_SR_CC1IF) == true)
+    if (timer_interrupt_source(timer.Peripheral, TIM_SR_CC1IF) == true)
     {
-        timer_clear_flag(TIM1, TIM_SR_CC1IF);
-        pulse_time   = TIM_CCR1(TIM1);
+        timer_clear_flag(timer.Peripheral, TIM_SR_CC1IF);
+        pulse_time   = TIM_CCR1(timer.Peripheral);
         pulse_count += compute_and_get_direction();
     } else {
         ; // should never fall here
