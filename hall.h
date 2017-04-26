@@ -6,6 +6,7 @@
 #include "definitions/timers_cpp.h"
 
 #include <stdint.h>
+#include <vector>
 #include <libopencm3/stm32/timer.h>
 
 #ifdef __cplusplus
@@ -42,13 +43,15 @@ public:
     void disable();
 
     float get_pulse_period_ms();
-    uint32_t get_pulse_count();
+    int32_t get_pulse_count();
+    int get_direction();
 
     void CC_interrupt_handler(void);
 
 private:
     void init_timer();
     void init_gpio(Port::Number port, Pin::Number pin);
+    int compute_and_get_direction();
     
     const Port::Number portH1;
     const Pin::Number  pinH1;
@@ -62,7 +65,10 @@ private:
 
     bool enabled = false;
     uint16_t pulse_time = 0;
-    uint32_t pulse_count = 0;
+    int32_t pulse_count = 0;
+    std::vector<int> last_gpio_arrangement;
+    int last_toggled_gpio = 0;
+    int direction = 0;
 };
 
 // Sensors

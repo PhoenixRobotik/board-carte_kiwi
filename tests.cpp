@@ -115,8 +115,8 @@ int main(int argc, char const *argv[]) {
         uint32_t rotation_speed_wheel2 = /*75*3.14159**/1000/(60*hallsensor2.get_pulse_period_ms());
         theCANBus().send(1, rotation_speed_wheel1);
         //theCANBus().send(2, rotation_speed_wheel2);
-        uint32_t distance_wheel1 = /*75*3.14159/60**/hallsensor1.get_pulse_count();
-        uint32_t distance_wheel2 = /*75*3.14159/60**/hallsensor2.get_pulse_count();
+        int32_t distance_wheel1 = /*75*3.14159/60**/hallsensor1.get_pulse_count();
+        int32_t distance_wheel2 = /*75*3.14159/60**/hallsensor2.get_pulse_count();
         theCANBus().send(3, distance_wheel1);
         //theCANBus().send(4, distance_wheel2);
         //theCANBus().send(5, data.data(), 4);

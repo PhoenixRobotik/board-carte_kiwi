@@ -82,6 +82,10 @@ void  Hall::init_gpio(Port::Number port, Pin::Number pin) {
 
 void Hall::enable() {
     enabled = true;
+    // initialize stuff for direction dection
+    last_gpio_arrangement = {-1, -1, -1};
+    compute_and_get_direction();
+
     nvic_enable_irq(timer.InterruptId);
     timer_enable_irq(timer.Peripheral,TIM_DIER_CC1IE);
     timer_ic_enable(timer.Peripheral, TIM_IC1);
@@ -97,13 +101,42 @@ void Hall::disable() {
     nvic_disable_irq(timer.InterruptId);
 }
 
-
 float Hall::get_pulse_period_ms() {
     return 1000*pulse_time/50000;
 }
 
-uint32_t Hall::get_pulse_count() {
+int32_t Hall::get_pulse_count() {
     return pulse_count;
+}
+
+int Hall::get_direction() {
+    return direction;
+}
+
+int Hall::compute_and_get_direction() {
+    std::vector<int> actual_gpio_arrangement = {
+        gpio_get(portH1, pinH1),
+        gpio_get(portH2, pinH2),
+        gpio_get(portH3, pinH3)};
+
+    int i = 0;
+    while (actual_gpio_arrangement[i] == last_gpio_arrangement[i] && i != 4) {
+        i++;
+    }
+
+    if (i == 4 or last_toggled_gpio == 4)
+    {
+        // should fall here only at enable time
+        // TODO : if fall here on error ?
+        direction = 0;
+    } else {
+        direction = (i > last_toggled_gpio ? 1 : -1);
+    }
+
+    last_toggled_gpio = i;
+    last_gpio_arrangement = actual_gpio_arrangement;
+
+    return direction;
 }
 
 void Hall::CC_interrupt_handler(void) {
@@ -112,7 +145,7 @@ void Hall::CC_interrupt_handler(void) {
     {
         timer_clear_flag(TIM1, TIM_SR_CC1IF);
         pulse_time   = TIM_CCR1(TIM1);
-        pulse_count += 1;
+        pulse_count += compute_and_get_direction();
     } else {
         ; // should never fall here
     }
