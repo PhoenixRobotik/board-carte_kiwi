@@ -124,11 +124,12 @@ int Hall::compute_and_get_direction() {
         i++;
     }
 
-    if (i == 4 or last_toggled_gpio == 4)
-    {
+    if (i == 4 or last_toggled_gpio == 4) {
         // should fall here only at enable time
         // TODO : if fall here on error ?
         direction = 0;
+    } else if (i == last_toggled_gpio) {
+        direction = - direction;
     } else {
         direction = (i > last_toggled_gpio ? 1 : -1);
     }
