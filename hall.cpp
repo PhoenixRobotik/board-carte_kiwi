@@ -44,11 +44,8 @@ void Hall::init_timer() {
     timer_set_repetition_counter(timer.Peripheral, 0);
     timer_enable_preload        (timer.Peripheral);
     timer_continuous_mode       (timer.Peripheral);
-    // we use 16bit width counter even if the timer is capable of 32bit
-    timer_set_period            (timer.Peripheral, (1<<16) - 1);
-    // 64MHz/1280 = 50kHz, wich means a minimal detection speed of ~3mm/s
-    // and a resolution of 0.1mm with a wheel diameter of 75mm and 60 pulses per tour
-    timer_set_prescaler         (timer.Peripheral, 1280);
+    timer_set_period            (timer.Peripheral, HALL_COUNTER_PERIOD);
+    timer_set_prescaler         (timer.Peripheral, HALL_PRESCALER);
 
     // That's specific to Timer1
     timer_enable_break_main_output(timer.Peripheral);
@@ -102,7 +99,7 @@ void Hall::disable() {
 }
 
 float Hall::get_pulse_period_ms() {
-    return 1000*pulse_time/50000;
+    return 1000*pulse_time/HALL_SAMPLE_FREQ_HZ;
 }
 
 int32_t Hall::get_pulse_count() {
