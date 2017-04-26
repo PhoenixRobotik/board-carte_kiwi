@@ -64,7 +64,26 @@ void CANBus::init() {
         0,                      // assign to fifo0
         true);                  // enable
 
+
+    // // FIFO0 overrun interrupt enable
+    // can_enable_irq(CAN_IER_FOVIE0);
+    // // FIFO0 full interrupt enable
+    // can_enable_irq(CAN_IER_FFIE0);
+    // FIFO0 message pending interrupt enable
+    // can_enable_irq(CAN_IER_FMPIE0);
+
+    // // FIFO1 overrun interrupt enable
+    // can_enable_irq(CAN_IER_FOVIE1);
+    // // FIFO1 full interrupt enable
+    // can_enable_irq(CAN_IER_FFIE1);
+    // FIFO1 message pending interrupt enable
+    // can_enable_irq(CAN_IER_FMPIE1);
+
+
+    // // Transmit mailbox empty interrupt
+    // can_enable_irq(CAN_IER_TMEIE);
 }
+
 void CANBus::deinit() {
 
 }
@@ -137,3 +156,14 @@ bool can_interface_read_message(uint32_t *id, uint8_t *message, uint8_t *length,
 
     return true;
 }
+
+// void can1_rx1_isr(void)
+// {
+
+// }
+
+// // error interrupts
+// void can1_sce_isr(void)
+// {
+
+// }
