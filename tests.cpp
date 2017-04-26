@@ -95,11 +95,13 @@ int main(int argc, char const *argv[]) {
     bool eepromStatus = false; // eepromTest();
 
     // Those are equivalent
-    kiwi.moteur1.setDuty     ( 150);
-    kiwi.moteur1.setPercent  (  75);
-    kiwi.moteur1.setMicrosec (1500);
+    // kiwi.moteur1.setDuty     ( 150);
+    // kiwi.moteur1.setPercent  (  75);
+    // kiwi.moteur1.setMicrosec (1500);
 
-    kiwi.moteur2.setMicrosec (1500);
+    int pulse = 1500;
+    int step = 5;
+    kiwi.moteur1.setMicrosec (1500);
     // pwmTest();
 
     theCANBus().init();
@@ -108,6 +110,8 @@ int main(int argc, char const *argv[]) {
     bool ledsOn = true;
     int i = 0;
     while(true) {
+    kiwi.sleep_ms(200);
+        kiwi.moteur1.setMicrosec (pulse);
         kiwi.activeLed.set(eepromStatus ? true : ledsOn);
 
         data = std::vector<uint8_t>(4, i++);
@@ -123,6 +127,10 @@ int main(int argc, char const *argv[]) {
 
         // kiwi.statusLed.set(eepromStatus);
         kiwi.sleep_ms(ledsOn ? 100 : 100);
+        if (pulse > 1750 or pulse < 1250) {
+            step = -step;
+        }
+        pulse += step;
         ledsOn = !ledsOn;
     }
 
