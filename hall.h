@@ -66,8 +66,7 @@ private:
     bool enabled = false;
     uint16_t pulse_time = 0;
     int32_t pulse_count = 0;
-    std::vector<int> last_gpio_arrangement;
-    int last_toggled_gpio = 0;
+    std::vector<int> last_hall_gpios_states;
     int direction = 0;
 };
 

@@ -80,8 +80,10 @@ void  Hall::init_gpio(Port::Number port, Pin::Number pin) {
 void Hall::enable() {
     enabled = true;
     // initialize stuff for direction dection
-    last_gpio_arrangement = {-1, -1, -1};
-    compute_and_get_direction();
+    last_hall_gpios_states = {
+        gpio_get(portH1, pinH1),
+        gpio_get(portH2, pinH2),
+        gpio_get(portH3, pinH3)};
 
     nvic_enable_irq(timer.InterruptId);
     timer_enable_irq(timer.Peripheral,TIM_DIER_CC1IE);
@@ -111,34 +113,37 @@ int Hall::get_direction() {
 }
 
 int Hall::compute_and_get_direction() {
-    std::vector<int> actual_gpio_arrangement = {
+    std::vector<int> current_hall_gpios_states = {
         gpio_get(portH1, pinH1),
         gpio_get(portH2, pinH2),
         gpio_get(portH3, pinH3)};
 
-    int i = 0;
-    while (actual_gpio_arrangement[i] == last_gpio_arrangement[i] && i != 4) {
-        i++;
-    }
+    int toggled_gpio = 0;
+    int edge_direction = 0;
+    int still_down_gpio = 0;
 
-    if (i == 4 or last_toggled_gpio == 4) {
-        // should fall here only at enable time
-        // TODO : if fall here on error ?
-        direction = 0;
-    } else if (i == last_toggled_gpio) {
-        direction = - direction;
-    } else {
-        direction = i - last_toggled_gpio;
-        if (direction == 2) {
-            direction = -1;
+    for (int i = 0; i < 3; i++) {
+
+        int gpio_state = current_hall_gpios_states[i];
+
+        if (gpio_state != last_hall_gpios_states[i]) {
+            toggled_gpio = i;
+            edge_direction = ((gpio_state == 0) ? -1 : 1);
         }
-        if (direction == -2) {
-            direction = 1;
+        else if (gpio_state == 0) {
+            still_down_gpio = i;
         }
     }
 
-    last_toggled_gpio = i;
-    last_gpio_arrangement = actual_gpio_arrangement;
+    // +1 and -1 before and after the modulo operation
+    // in order to obtain -1 when we should obtain 2
+    direction  = still_down_gpio - toggled_gpio + 1;
+    // this modulo implementation gives a strict positive result
+    direction  = (direction < 0 ? (direction % 3) + 3 : direction % 3 );
+    direction -= 1;
+    direction *= edge_direction;
+
+    last_hall_gpios_states = current_hall_gpios_states;
 
     return direction;
 }
