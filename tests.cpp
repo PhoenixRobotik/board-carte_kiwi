@@ -6,6 +6,7 @@
 #include "hall.h"
 
 #include <vector>
+#include <stdexcept>
 
 class BoardKiwi
 : public System {
@@ -93,6 +94,13 @@ int main(int argc, char const *argv[]) {
     // BoardKiwi kiwi;
 
     bool eepromStatus = false; // eepromTest();
+
+    try {
+        throw std::runtime_error("auie");
+    } catch (std::exception const& e){
+        e.what();
+
+    }
 
     // Those are equivalent
     // kiwi.moteur1.setDuty     ( 150);

@@ -45,3 +45,5 @@ target_link_libraries(${PROJECT_NAME}Tests
     ${PROJECT_NAME}Lib
     ${Toolchain_LFlags}
 )
+
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -fexceptions")
