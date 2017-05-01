@@ -21,6 +21,7 @@ add_library(${PROJECT_NAME}Lib STATIC
     eeprom.cpp
     hall.cpp
     leds.cpp
+    motor.cpp
     pwm.cpp
     uart.cpp
 )
@@ -45,3 +46,5 @@ target_link_libraries(${PROJECT_NAME}Tests
     ${PROJECT_NAME}Lib
     ${Toolchain_LFlags}
 )
+
+add_definitions(-fno-exceptions)

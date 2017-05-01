@@ -4,6 +4,7 @@
 #include "leds.h"
 #include "pwm.h"
 #include "hall.h"
+#include "motor.h"
 
 #include <vector>
 
@@ -14,22 +15,25 @@ public:
     : System()
     , activeLed(Port::pF, Pin::p0)
     , statusLed(Port::pF, Pin::p1)
-    , moteur1(Port::pB, Pin::p0,
+    , pwm_Mot1(Port::pB, Pin::p0,
             Timer3,
             AltFunction::f2,
             TIM_OC3)
-    , moteur2(Port::pA, Pin::p6,
+    , pwm_Mot2(Port::pA, Pin::p6,
             Timer3,
             AltFunction::f2,
             TIM_OC1)
+    , motor_right(pwm_Mot1)
+    , motor_left(pwm_Mot2)
     // , usart1(USART1, Port::pB, Pin::p7, Port::pB, Pin::p6)
     // , usart2(USART2, Port::pB, Pin::p4, Port::pB, Pin::p3)
     { }
 
     Led activeLed, statusLed;
 
-    PWM moteur1, moteur2;
+    PWM pwm_Mot1, pwm_Mot2;
 
+    WheelHubMotor motor_right, motor_left;
     // USART usart1;
     // USART usart2;
 
@@ -76,17 +80,17 @@ bool eepromTest() {
 
 
 void pwmTest() {
-    kiwi.moteur1.setDuty(150);
+    kiwi.pwm_Mot1.setDuty(150);
     kiwi.sleep_ms(1000);
-    kiwi.moteur1.setDuty(110);
+    kiwi.pwm_Mot1.setDuty(110);
     kiwi.sleep_ms(500);
-    kiwi.moteur1.setDuty(150);
+    kiwi.pwm_Mot1.setDuty(150);
 
-    kiwi.moteur2.setDuty(150);
+    kiwi.pwm_Mot2.setDuty(150);
     kiwi.sleep_ms(1000);
-    kiwi.moteur2.setDuty(110);
+    kiwi.pwm_Mot2.setDuty(110);
     kiwi.sleep_ms(500);
-    kiwi.moteur2.setDuty(150);
+    kiwi.pwm_Mot2.setDuty(150);
 }
 
 int main(int argc, char const *argv[]) {
@@ -95,13 +99,15 @@ int main(int argc, char const *argv[]) {
     bool eepromStatus = false; // eepromTest();
 
     // Those are equivalent
-    // kiwi.moteur1.setDuty     ( 150);
-    // kiwi.moteur1.setPercent  (  75);
-    // kiwi.moteur1.setMicrosec (1500);
+    // kiwi.pwm_Mot1.setDuty     ( 150);
+    // kiwi.pwm_Mot1.setPercent  (  75);
+    // kiwi.pwm_Mot1.setMicrosec (1500);
 
-    int pulse = 1500;
+    int percent = 0;
     int step = 5;
-    kiwi.moteur1.setMicrosec (1500);
+    kiwi.motor_right.enable();
+    //kiwi.pwm_Mot1.setMicrosec (1500);
+    kiwi.sleep_ms(200);
     // pwmTest();
 
     theCANBus().init();
@@ -110,27 +116,29 @@ int main(int argc, char const *argv[]) {
     bool ledsOn = true;
     int i = 0;
     while(true) {
-    kiwi.sleep_ms(200);
-        kiwi.moteur1.setMicrosec (pulse);
+        //kiwi.pwm_Mot1.setMicrosec (1520);
+        kiwi.motor_right.set_percent_speed(percent);
+        //kiwi.motor_right.set_rot_per_min_speed(percent*1180/100);
+        //kiwi.motor_right.set_rot_per_sec_speed(percent*1180/100/60);
         kiwi.activeLed.set(eepromStatus ? true : ledsOn);
 
         data = std::vector<uint8_t>(4, i++);
-        uint32_t rotation_speed_wheel1 = /*75*3.14159**/1000/(60*hallsensor1.get_pulse_period_ms());
-        uint32_t rotation_speed_wheel2 = /*75*3.14159**/1000/(60*hallsensor2.get_pulse_period_ms());
+        uint32_t rotation_speed_wheel1 = /*75*3.14159**/1000000/(60*hallsensor1.get_pulse_period_ms());
+        // uint32_t rotation_speed_wheel2 = /*75*3.14159**/1000/(60*hallsensor2.get_pulse_period_ms());
         theCANBus().send(1, rotation_speed_wheel1);
-        //theCANBus().send(2, rotation_speed_wheel2);
-        int32_t distance_wheel1 = /*75*3.14159/60**/hallsensor1.get_pulse_count();
-        int32_t distance_wheel2 = /*75*3.14159/60**/hallsensor2.get_pulse_count();
-        theCANBus().send(3, distance_wheel1);
+        // theCANBus().send(2, rotation_speed_wheel2);
+        // int32_t distance_wheel1 = /*75*3.14159/60**/hallsensor1.get_pulse_count();
+        // int32_t distance_wheel2 = /*75*3.14159/60**/hallsensor2.get_pulse_count();
+        //theCANBus().send(3, distance_wheel1);
         //theCANBus().send(4, distance_wheel2);
         //theCANBus().send(5, data.data(), 4);
 
         // kiwi.statusLed.set(eepromStatus);
         kiwi.sleep_ms(ledsOn ? 100 : 100);
-        if (pulse > 1750 or pulse < 1250) {
+        if (percent == 100 or percent == -100) {
             step = -step;
         }
-        pulse += step;
+        percent += step;
         ledsOn = !ledsOn;
     }
 
