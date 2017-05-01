@@ -1,15 +1,13 @@
 #pragma once
 
-#include <libopencm3/stm32/rcc.h>
 #include "definitions/gpio_cpp.h"
 
 #ifdef __cplusplus
 
 class Led {
 public:
-    Led(Port::Number _port, Pin::Number _pin)
-    : port(_port)
-    , pin (_pin)
+    Led(Pin _pin)
+    : pin (_pin)
     {
         init();
     }
@@ -17,11 +15,12 @@ public:
     void init();
 
     void set(bool on);
+    void setOn()    { set(true);  }
+    void setOff()   { set(false); }
     void toggle();
 
 private:
-    const Port::Number port;
-    const Pin::Number  pin;
+    const Pin  pin;
 };
 
 extern "C" {

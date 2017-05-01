@@ -1,18 +1,22 @@
 #include "leds.h"
 
-#include <libopencm3/stm32/gpio.h>
+// #include <libopencm3/stm32/gpio.h>
 
 void Led::set(bool on) {
-    on  ? gpio_set  (port, pin)
-        : gpio_clear(port, pin);
+    on  ? libopencm3::gpio_set  (pin.port->Id, pin.number)
+        : libopencm3::gpio_clear(pin.port->Id, pin.number);
 }
 void Led::toggle() {
-    gpio_toggle(port, pin);
+    libopencm3::gpio_toggle(pin.port->Id, pin.number);
 }
 
 void Led::init() {
-    rcc_periph_clock_enable(RCC_GPIOF); // TODO F-specific
-    gpio_mode_setup(port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, pin);
+    pin.port->enable();
+    libopencm3::gpio_mode_setup(
+        pin.port->Id,
+        GPIO_MODE_OUTPUT,
+        GPIO_PUPD_NONE,
+        pin.number);
 }
 
 
