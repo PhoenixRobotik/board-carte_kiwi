@@ -97,7 +97,7 @@ void Hall::disable() {
     nvic_disable_irq(timer.InterruptId);
 }
 
-float Hall::get_pulse_period_ms() {
+double Hall::get_pulse_period_ms() {
     return (1000.0*pulse_time)/HALL_SAMPLE_FREQ_HZ;
 }
 
