@@ -15,3 +15,17 @@ Timer Timer7({ true, TIM7, RST_TIM7, RCC_TIM7, NVIC_TIM7_IRQ });
 // Timer Timer15;
 // Timer Timer16;
 // Timer Timer17;
+void tim1_cc_isr(void)
+{
+    auto a = interruptSubscriptions.find(get_interrupt_flag(timer.Peripheral));
+    if (a != interruptSubscriptions.end())
+        a->second();
+
+
+    hallsensor1.CC_interrupt_handler();
+}
+
+void tim2_isr(void)
+{
+    hallsensor2.CC_interrupt_handler();
+}
