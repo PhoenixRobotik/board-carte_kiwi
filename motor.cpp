@@ -9,6 +9,8 @@ void WheelHubMotor::init() {
 }
 
 void WheelHubMotor::enable() {
+	pwm.enable();
+	// hall_sensor.enable();
 	pwm.setMicrosec((uint32_t) std::round(PULSE_MIDPOINT));
 }
 
@@ -54,6 +56,13 @@ bool WheelHubMotor::set_percent_speed(double percent) {
 // 	return set_rot_per_min_speed(target_speed*60);
 // }
 
+double WheelHubMotor::get_rot_per_sec_speed() {
+	return 1000.0/(HALL_TICK_PER_ROT*hall_sensor.get_pulse_period_ms());
+}
+
+double WheelHubMotor::get_rot_per_min_speed() {
+	return 60*get_rot_per_sec_speed();
+}
 
 extern "C" {
 

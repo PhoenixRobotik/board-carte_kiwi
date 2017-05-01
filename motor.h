@@ -1,6 +1,7 @@
 #pragma once
 
 #include "pwm.h"
+#include "hall.h"
 
 #ifdef __cplusplus
 
@@ -15,12 +16,14 @@
 #define PULSE_MIN (PULSE_FORWARD_H)
 #define PULSE_MAX (PULSE_BACKWARD_H)
 
+#define HALL_TICK_PER_ROT    (60)
 
 class WheelHubMotor
 {
 public:
-    WheelHubMotor(PWM _pwm)
+    WheelHubMotor(PWM _pwm, Hall _hall_sensor)
     : pwm(_pwm)
+    , hall_sensor(_hall_sensor)
     {
         init();
     }
@@ -41,12 +44,13 @@ public:
     // bool set_rad_per_sec_speed(double target_speed);
 
     // getters
-    // void get_rot_per_min_speed(double& physical_speed);
-    // void get_rot_per_sec_speed(double& physical_speed);
-    // void get_rad_per_sec_speed(double& physical_speed);
+    double get_rot_per_min_speed();
+    double get_rot_per_sec_speed();
+    // double get_rad_per_sec_speed();
 
 private:
     PWM pwm;
+    Hall hall_sensor;
 };
 
 

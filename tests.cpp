@@ -23,8 +23,8 @@ public:
             Timer3,
             AltFunction::f2,
             TIM_OC1)
-    , motor_right(pwm_Mot1)
-    , motor_left(pwm_Mot2)
+    , motor_right(pwm_Mot1, hallsensor1)
+    , motor_left(pwm_Mot2, hallsensor2)
     // , usart1(USART1, Port::pB, Pin::p7, Port::pB, Pin::p6)
     // , usart2(USART2, Port::pB, Pin::p4, Port::pB, Pin::p3)
     { }
@@ -123,7 +123,7 @@ int main(int argc, char const *argv[]) {
         kiwi.activeLed.set(eepromStatus ? true : ledsOn);
 
         data = std::vector<uint8_t>(4, i++);
-        uint32_t rotation_speed_wheel1 = /*75*3.14159**/1000000/(60*hallsensor1.get_pulse_period_ms());
+        uint32_t rotation_speed_wheel1 = 1000*kiwi.motor_right.get_rot_per_sec_speed();
         // uint32_t rotation_speed_wheel2 = /*75*3.14159**/1000/(60*hallsensor2.get_pulse_period_ms());
         theCANBus().send(1, rotation_speed_wheel1);
         // theCANBus().send(2, rotation_speed_wheel2);
