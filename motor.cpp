@@ -9,7 +9,7 @@ void WheelHubMotor::init() {
 }
 
 void WheelHubMotor::enable() {
-	pwm.setMicrosec(std::round(PULSE_MIDPOINT));
+	pwm.setMicrosec((uint32_t) std::round(PULSE_MIDPOINT));
 }
 
 bool WheelHubMotor::set_percent_speed(double percent) {
@@ -26,7 +26,7 @@ bool WheelHubMotor::set_percent_speed(double percent) {
 	} else {
 		return false;
 	}
-	pwm.setMicrosec(std::round(pwm_pulse));
+	pwm.setMicrosec((uint32_t) std::round(pwm_pulse));
 	return true;
 
 }
