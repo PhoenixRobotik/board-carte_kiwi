@@ -17,9 +17,6 @@ Hall hallsensor2(Port::pA, Pin::p0,
             Timer2,
             AltFunction::f1);
 
-uint32_t rotation_speed_sensor1 = 0;
-uint32_t rotation_speed_sensor2 = 0;
-
 // TODO : need to handle counter overflow
 
 void Hall::init() {
