@@ -16,6 +16,7 @@ include(${GenericCmakeLists})
 # Déclaration des sources de la librairie
 add_library(${PROJECT_NAME}Lib STATIC
     definitions/interruptions.cpp
+    definitions/peripheral.cpp
     definitions/port.cpp
     definitions/timers_cpp.cpp
     can.cpp

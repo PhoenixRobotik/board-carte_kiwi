@@ -11,27 +11,24 @@
 #include <libopencm3/stm32/flash.h>
 #include <libopencm3/stm32/rcc.h>
 
-
-CANBus& theCANBus() {
-    static CANBus theOneAndOnlyCANBus;
-    return theOneAndOnlyCANBus;
-}
-
-const Port::Number CANPort  = Port::pA;
-const Pin ::Number CANPinRx = Pin ::p11;
-const Pin ::Number CANPinTx = Pin ::p12;
+using namespace libopencm3;
 
 void CANBus::init() {
-    rcc_periph_clock_enable(RCC_CAN);
-    rcc_periph_clock_enable(RCC_GPIOA);
+    m_CANPeriph->enable();
+    m_rx.port->enable();
+    m_tx.port->enable();
 
-    gpio_mode_setup(CANPort, GPIO_MODE_AF, GPIO_PUPD_NONE,
-                    CANPinRx | CANPinTx);
+    gpio_mode_setup(m_rx.port->Id, GPIO_MODE_AF, GPIO_PUPD_NONE, m_rx.number);
+    gpio_mode_setup(m_tx.port->Id, GPIO_MODE_AF, GPIO_PUPD_NONE, m_tx.number);
+
+    gpio_set_af(m_rx.port->Id, m_rx_af, m_rx.number);
+    gpio_set_af(m_tx.port->Id, m_tx_af, m_tx.number);
+
     gpio_set_output_options(
-                    CANPort, GPIO_OTYPE_PP, GPIO_OSPEED_100MHZ,
-                    CANPinRx | CANPinTx);
-    gpio_set_af(    CANPort, GPIO_AF9,
-                    CANPinRx | CANPinTx);
+                    m_tx.port->Id, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, m_tx.number);
+    // gpio_set_output_options(
+    //                 m_rx.port->Id, GPIO_OTYPE_PP, GPIO_OSPEED_100MHZ, m_rx.number);
+
 
     // STM32F3 CAN on APB1 peripheral clock
     // APB1 clock period : 1/32MHz
@@ -39,7 +36,7 @@ void CANBus::init() {
     // We want 1Mbit baud rate, so we need 16MHz/1MHz = 16tq
     // We want sample point at 87.5% (CANopen prefered value)
     // 87.5% * 16 = 14, so TS1 = 14 - 1 = 13 and TS2 = 16 - 14 = 2
-    can_init(CAN,               // Interface
+    can_init(m_CANPeriph->Id,   // Interface
              false,             // Time triggered communication mode.
              true,              // Automatic bus-off management.
              false,             // Automatic wakeup mode.
@@ -93,12 +90,12 @@ bool CANBus::send(uint32_t id, uint8_t* data, size_t dataSize) {
     int32_t retries = maxSendRetries;
     int statusCAN;
 
-    while (can_available_mailbox(CAN) == false);
+    while (can_available_mailbox(m_CANPeriph->Id) == false);
 
     do {
 
         statusCAN = can_transmit(
-            CAN,      // canport
+            m_CANPeriph->Id, // canport
             id,       // can id
             false,    // extended id
             false,    // request transmit
@@ -111,13 +108,13 @@ bool CANBus::send(uint32_t id, uint8_t* data, size_t dataSize) {
     switch(statusCAN)
     {
         case 0:
-            while((CAN_TSR(CAN) & CAN_TSR_RQCP0) == 0);
+            while((CAN_TSR(m_CANPeriph->Id) & CAN_TSR_RQCP0) == 0);
             break;
         case 1:
-            while((CAN_TSR(CAN) & CAN_TSR_RQCP1) == 0);
+            while((CAN_TSR(m_CANPeriph->Id) & CAN_TSR_RQCP1) == 0);
             break;
         case 2:
-            while((CAN_TSR(CAN) & CAN_TSR_RQCP2) == 0);
+            while((CAN_TSR(m_CANPeriph->Id) & CAN_TSR_RQCP2) == 0);
             break;
     }
 

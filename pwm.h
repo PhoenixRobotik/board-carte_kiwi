@@ -6,21 +6,20 @@
 #include "definitions/timers_cpp.h"
 
 #include <stdint.h>
-#include <libopencm3/stm32/timer.h>
 
-#ifdef __cplusplus
+namespace libopencm3 {
+    #include <libopencm3/stm32/timer.h>
+}
 
 class PWM
 {
 public:
-    PWM(Port::Number _port, Pin::Number _pin,
-        Timer const& _timer,
-        AltFunction::Number _altFunction, tim_oc_id _channel)
-    : port(_port)
-    , pin(_pin)
-    , timer(_timer)
-    , altFunction(_altFunction)
-    , channel(_channel)
+    PWM(Peripheral* timer, libopencm3::tim_oc_id channel,
+        Pin outPin, AltFunction::Number altFunction)
+    : m_timer(timer)
+    , m_channel(channel)
+    , m_pin(outPin)
+    , m_out_af(altFunction)
     {
         init();
         enable(); // But with dutycycle = 0
@@ -53,26 +52,26 @@ public:
     int setMillisec();
 
 private:
-    const Port::Number port;
-    const Pin::Number  pin;
+    Peripheral* const m_timer;
+    libopencm3::tim_oc_id const m_channel;
 
-    const Timer& timer;
-    const AltFunction::Number altFunction;
-    const tim_oc_id channel;
+    Pin const m_pin;
+    AltFunction::Number const m_out_af;
+
 
     bool enabled = false;
     uint32_t duty = 0;
 };
 
 
-extern "C" {
-#endif
+// extern "C" {
+// #endif
 
-struct PWM;
-void pwm_set_duty   (PWM* pwm, uint32_t duty);
-void pwm_set_ms     (PWM* pwm, int _millisec);
-void pwm_set_percent(PWM* pwm, int _percent);
+// struct PWM;
+// void pwm_set_duty   (PWM* pwm, uint32_t duty);
+// void pwm_set_ms     (PWM* pwm, int _millisec);
+// void pwm_set_percent(PWM* pwm, int _percent);
 
-#ifdef __cplusplus
-}
-#endif
+// #ifdef __cplusplus
+// }
+// #endif

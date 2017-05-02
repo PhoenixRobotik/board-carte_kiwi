@@ -1,73 +1,62 @@
 #include "pwm.h"
 #include "leds.h"
 
-#include <libopencm3/cm3/nvic.h>
-#include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/timer.h>
+namespace libopencm3 {
+    #include <libopencm3/cm3/nvic.h>
+    #include <libopencm3/stm32/rcc.h>
+    #include <libopencm3/stm32/gpio.h>
+    #include <libopencm3/stm32/timer.h>
+}
 
-PWM moteur1(Port::pB, Pin::p0,
-            Timer3,
-            AltFunction::f2,
-            TIM_OC3);
-
-PWM moteur2(Port::pA, Pin::p6,
-            Timer3,
-            AltFunction::f2,
-            TIM_OC1);
-
+using namespace libopencm3;
 
 void PWM::init() {
     // Enable timer clock
-    rcc_periph_clock_enable(timer.ClockEnable);
+    m_timer->enable();
     // Enable GPIO clock
-    rcc_periph_clock_enable(RCC_GPIOB); // TODO pass this
+    m_pin.port->enable();
     // Enable timer interrupt
-    nvic_enable_irq(timer.InterruptId);
+    nvic_enable_irq(m_timer->InterruptId);
     // Reset timer peripheral to defaults
     // rcc_periph_reset_pulse(timer.Reset);
 
     // Reset timer peripheral
-    timer_set_mode (timer.Peripheral,
+    timer_set_mode (m_timer->Id,
                     TIM_CR1_CKD_CK_INT,
                     TIM_CR1_CMS_EDGE,
                     TIM_CR1_DIR_UP);
 
-    timer_set_repetition_counter(timer.Peripheral, 0);
-    timer_enable_preload        (timer.Peripheral);
-    timer_continuous_mode       (timer.Peripheral);
-    timer_set_period            (timer.Peripheral, PWM_PERIOD);
-    timer_set_prescaler         (timer.Peripheral, PWM_GRANUL_PERIOD);
+    timer_set_repetition_counter(m_timer->Id, 0);
+    timer_enable_preload        (m_timer->Id);
+    timer_continuous_mode       (m_timer->Id);
+    timer_set_period            (m_timer->Id, PWM_PERIOD);
+    timer_set_prescaler         (m_timer->Id, PWM_GRANUL_PERIOD);
 
     // Setup GPIO
+    gpio_mode_setup(m_pin.port->Id, GPIO_MODE_AF, GPIO_PUPD_NONE,    m_pin.number);
+    gpio_set_af(    m_pin.port->Id, m_out_af, m_pin.number);
     gpio_set_output_options(
-                port, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ,
-                pin);
-    gpio_mode_setup(
-                port, GPIO_MODE_AF, GPIO_PUPD_NONE,
-                pin);
-    gpio_set_af(port, altFunction,
-                pin);
+                    m_pin.port->Id, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, m_pin.number);
 
 
-    timer_enable_break_main_output(timer.Peripheral); // That's specific to Timer1
-    timer_disable_oc_output (timer.Peripheral, channel);
-    timer_set_oc_mode       (timer.Peripheral, channel, TIM_OCM_PWM1);
+    timer_enable_break_main_output(m_timer->Id); // That's specific to Timer1
+    timer_disable_oc_output (m_timer->Id, m_channel);
+    timer_set_oc_mode       (m_timer->Id, m_channel, TIM_OCM_PWM1);
 }
 
 void PWM::enable() {
     enabled = true;
     // start timer
-    timer_enable_counter(timer.Peripheral);
+    timer_enable_counter(m_timer->Id);
 
-    timer_set_oc_value      (timer.Peripheral, channel, duty);
-    timer_enable_oc_output  (timer.Peripheral, channel);
+    timer_set_oc_value      (m_timer->Id, m_channel, duty);
+    timer_enable_oc_output  (m_timer->Id, m_channel);
 }
 
 void PWM::disable(){
     enabled = false;
-    timer_disable_counter   (timer.Peripheral);
-    timer_disable_oc_output (timer.Peripheral, channel);
+    timer_disable_counter   (m_timer->Id);
+    timer_disable_oc_output (m_timer->Id, m_channel);
 }
 
 void PWM::setDuty(uint32_t _duty) {

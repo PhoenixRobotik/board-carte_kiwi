@@ -1,8 +1,6 @@
 #pragma once
 
-
-#ifdef __cplusplus
-
+#include "definitions/peripheral.h"
 #include "definitions/gpio_cpp.h"
 
 #include <queue>
@@ -10,16 +8,22 @@
 
 class USART {
 public:
-    USART(uint32_t periphUSART, Port::Number portRX, Pin::Number pinRX, Port::Number portTX, Pin::Number pinTX)
-    : m_periphUSART(periphUSART)
-    , m_portRX(portRX)
-    , m_portTX(portTX)
-    , m_pinRX(pinRX)
-    , m_pinTX(pinTX)
+    USART(Peripheral* UARTPeriph,
+        Pin rx, AltFunction::Number rx_af,
+        Pin tx, AltFunction::Number tx_af,
+        int baudrate = 115200)
+    : m_UARTPeriph(UARTPeriph)
+    , m_rx(rx)
+    , m_tx(tx)
+    , m_rx_af(rx_af)
+    , m_tx_af(tx_af)
+    , m_baudrate(baudrate)
     { }
-    ~USART() { }
+
+    ~USART() { deinit(); }
 
     void init();
+    void deinit();
 
     void sendNonBlocking(std::vector<uint8_t> const& data);
     void sendBlocking   (std::vector<uint8_t> const& data);
@@ -32,22 +36,15 @@ public:
     std::vector<uint8_t> getReceptionBuffer();
 
 private:
-    uint32_t m_periphUSART;
-    Port::Number m_portRX;
-    Port::Number m_portTX;
-    Pin::Number m_pinRX;
-    Pin::Number m_pinTX;
+    Peripheral* m_UARTPeriph;
+    Pin m_rx, m_tx;
+    AltFunction::Number m_rx_af, m_tx_af;
+
+    int m_baudrate;
+
 
     volatile int m_emissionBufferPosition;
     volatile int m_receptionBufferPosition;
 
     std::vector<uint8_t> m_receptionBuffer;
 };
-
-extern "C" {
-#endif
-
-
-#ifdef __cplusplus
-}
-#endif
