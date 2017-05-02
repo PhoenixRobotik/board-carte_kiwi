@@ -84,7 +84,7 @@ void Hall::disable() {
     m_timerInterrupt.unsubscribe();
 }
 
-float Hall::get_pulse_period_ms() {
+double Hall::get_pulse_period_ms() {
     return (1000. * pulse_time) / HALL_SAMPLE_FREQ_HZ;
 }
 

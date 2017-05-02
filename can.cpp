@@ -85,7 +85,7 @@ void CANBus::deinit() {
 
 
 bool CANBus::send(uint32_t id, uint8_t* data, size_t dataSize) {
-    int32_t retries = maxSendRetries;
+    // int32_t retries = maxSendRetries;
     int statusCAN;
 
     while (can_available_mailbox(m_CANPeriph->Id) == false);

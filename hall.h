@@ -36,7 +36,7 @@ public:
     void enable();
     void disable();
 
-    float get_pulse_period_ms();
+    double get_pulse_period_ms();
     int32_t get_pulse_count();
     int get_direction();
 

@@ -34,8 +34,8 @@ public:
             Pin(PortA, Pin::p1),
             Pin(PortA, Pin::p2),
             AltFunction::f1)
-    , motor_right(pwm_Mot1)
-    , motor_left(pwm_Mot2)
+    , motor_right(pwm_Mot1, hallsensor1)
+    , motor_left(pwm_Mot2, hallsensor2)
     // , usart1(USART1,
     //         Pin(PortB, Pin::p7),
     //         Pin(PortB, Pin::p6))
@@ -110,48 +110,41 @@ void pwmTest() {
 
 int main(int argc, char const *argv[]) {
     kiwi = std::make_unique<BoardKiwi>();
-
     kiwi->statusLed.setOn();
-    kiwi->activeLed.setOn();
 
     int percent = 0;
     int step = 5;
     kiwi->motor_right.enable();
-    //kiwi.pwm_Mot1.setMicrosec (1500);
     kiwi->sleep_ms(200);
-    // pwmTest();
 
     std::vector<uint8_t> data;
 
     bool ledsOn = true;
     int i = 0;
     while(true) {
-        // kiwi.pwm_Mot1.setMicrosec (1520);
         kiwi->motor_right.set_percent_speed(percent);
         // kiwi.motor_right.set_rot_per_min_speed(percent*1180/100);
         // kiwi.motor_right.set_rot_per_sec_speed(percent*1180/100/60);
         // kiwi->activeLed.set(eepromStatus ? true : ledsOn);
 
         data = std::vector<uint8_t>(4, i++);
-        uint32_t rotation_speed_wheel1 =
-            // 75 * 3.14159 *
-            1000000/(60*kiwi->hallsensor1.get_pulse_period_ms());
-        // uint32_t rotation_speed_wheel2 =
-        //     // 75 * 3.14159 *
-        //     1000/(60*kiwi->hallsensor2.get_pulse_period_ms());
+
+        uint32_t rotation_speed_wheel1 = 1000 * kiwi->motor_right.get_rot_per_sec_speed();
+        // uint32_t rotation_speed_wheel2 = 1000 * kiwi->motor_left.get_rot_per_sec_speed();
         kiwi->canBus.send(1, rotation_speed_wheel1);
-        // theCANBus().send(2, rotation_speed_wheel2);
+        // kiwi->canBus.send(2, rotation_speed_wheel2);
+
         // int32_t distance_wheel1 =
         //     // 75*3.14159/60*
         //     kiwi->hallsensor1.get_pulse_count();
         // int32_t distance_wheel2 =
         //     // 75*3.14159/60*
         //     kiwi->hallsensor2.get_pulse_count();
-        // theCANBus().send(3, distance_wheel1);
-        // theCANBus().send(4, distance_wheel2);
-        // theCANBus().send(5, data.data(), 4);
+        // kiwi->canBus.send(3, distance_wheel1);
+        // kiwi->canBus.send(4, distance_wheel2);
+        // kiwi->canBus.send(5, data.data(), 4);
 
-        // kiwi->statusLed.set(eepromStatus);
+        kiwi->activeLed.toggle();
         kiwi->sleep_ms(ledsOn ? 100 : 100);
         if (percent == 100 or percent == -100) {
             step = -step;
