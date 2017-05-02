@@ -64,8 +64,14 @@ public:
     , number(_number)
     { }
 
-    Port*   port;
-    Number  number;
+    Pin(const Pin& copy)
+    : port(copy.port)
+    , number (copy.number)
+    { }
+
+    // Const pointer to non-const port
+    Port*  const  port;
+    Number const number;
 };
 
 
