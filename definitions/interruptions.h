@@ -1,46 +1,52 @@
 #pragma once
 
 #include <memory>
-#include <vector>
+#include <set>
 
 class InterruptProvider;
 
-class InterruptListener
-: std::enable_shared_from_this<InterruptListener>
+class InterruptSubscriber
 {
 public:
-    virtual bool callback() = 0;
+    InterruptSubscriber(InterruptProvider* _provider, std::function<void(void)> _callback)
+    : provider(_provider)
+    , callback(_callback)
+    { }
+    ~InterruptSubscriber()
+    { unsubscribe(); }
 
-protected:
-    void subscribe(InterruptProvider& provider);
+    void subscribe();
+    void unsubscribe();
+
+    InterruptProvider* const provider;
+    std::function<void(void)> const callback;
 };
-
 
 
 class InterruptProvider {
 public:
-    void subscribe(std::shared_ptr<InterruptListener> subscriber) {
+    InterruptProvider(uint8_t _id)
+    : Id(_id)
+    { }
 
-        subscribers.push_back(subscriber);
-    }
+    void subscribe  (InterruptSubscriber* subscriber);
+    void unsubscribe(InterruptSubscriber* subscriber);
 
-protected:
+    void enable();
+    void disable();
+    void setPriority(int priority);
+
     // Cleanup subscribers on the fly
-    void interrupt() {
-        for (auto subs_it = subscribers.begin(); subs_it != subscribers.end(); ++subs_it)
-            if (auto subscriber = subs_it->lock())
-                subscriber->callback();
-            else
-                subs_it = subscribers.erase(subs_it);
-    }
+    void interrupt();
 
 private:
-    std::vector<std::weak_ptr<InterruptListener>> subscribers;
+    uint8_t const Id;
+
+    std::set<InterruptSubscriber*> subscribers;
 };
 
 
 
-
-void InterruptListener::subscribe(InterruptProvider& provider) {
-    provider.subscribe(shared_from_this());
-}
+extern InterruptProvider
+    InterruptTimer1_CC,
+    InterruptTimer2;
