@@ -1,104 +1,94 @@
 #include "hall.h"
 
-#include <libopencm3/cm3/nvic.h>
-#include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/timer.h>
+namespace libopencm3 {
+    #include <libopencm3/stm32/rcc.h>
+    #include <libopencm3/stm32/gpio.h>
+    #include <libopencm3/stm32/timer.h>
+}
 
-Hall hallsensor1(Port::pA, Pin::p8,
-            Port::pA, Pin::p9,
-            Port::pA, Pin::p10,
-            Timer1,
-            AltFunction::f6);
-
-Hall hallsensor2(Port::pA, Pin::p0,
-            Port::pA, Pin::p1,
-            Port::pA, Pin::p2,
-            Timer2,
-            AltFunction::f1);
-
+using namespace libopencm3;
 // TODO : need to handle counter overflow
 
 void Hall::init() {
     // Enable GPIO clock
-    rcc_periph_clock_enable(RCC_GPIOA); // TODO pass this
-    Hall::init_gpio(portH1, pinH1);
-    Hall::init_gpio(portH2, pinH2);
-    Hall::init_gpio(portH3, pinH3);
+    init_gpio(m_h1_in);
+    init_gpio(m_h2_in);
+    init_gpio(m_h3_in);
 
     // Enable timer clock
-    rcc_periph_clock_enable(timer.ClockEnable);
-    Hall::init_timer();
+    init_timer();
 }
 
 void Hall::init_timer() {
+    m_timer->enable();
+
     // Reset timer peripheral
-    timer_set_mode (timer.Peripheral,
+    timer_set_mode (m_timer->Id,
                     TIM_CR1_CKD_CK_INT,
                     TIM_CR1_CMS_EDGE,
                     TIM_CR1_DIR_UP);
 
-    timer_set_repetition_counter(timer.Peripheral, 0);
-    timer_enable_preload        (timer.Peripheral);
-    timer_continuous_mode       (timer.Peripheral);
-    timer_set_period            (timer.Peripheral, HALL_COUNTER_PERIOD);
-    timer_set_prescaler         (timer.Peripheral, HALL_PRESCALER);
+    timer_set_repetition_counter(m_timer->Id, 0);
+    timer_enable_preload        (m_timer->Id);
+    timer_continuous_mode       (m_timer->Id);
+    timer_set_period            (m_timer->Id, HALL_COUNTER_PERIOD);
+    timer_set_prescaler         (m_timer->Id, HALL_PRESCALER);
 
     // That's specific to Timer1
-    timer_enable_break_main_output(timer.Peripheral);
+    timer_enable_break_main_output(m_timer->Id);
 
-    // timer_set_clock_division(timer.Peripheral, TIM_CR1_CKD_CK_INT);
-    timer_set_ti1_ch123_xor(timer.Peripheral);
-    timer_slave_set_trigger(timer.Peripheral, TIM_SMCR_TS_TI1F_ED);
-    timer_slave_set_mode(timer.Peripheral, TIM_SMCR_SMS_RM);
+    // timer_set_clock_division(m_timer->Id, TIM_CR1_CKD_CK_INT);
+    timer_set_ti1_ch123_xor(m_timer->Id);
+    timer_slave_set_trigger(m_timer->Id, TIM_SMCR_TS_TI1F_ED);
+    timer_slave_set_mode(m_timer->Id, TIM_SMCR_SMS_RM);
 
-    timer_ic_disable(timer.Peripheral, TIM_IC1);
-    timer_ic_set_polarity(timer.Peripheral, TIM_IC1, TIM_IC_BOTH); // or TIM_IC_BOTH ?
-    timer_ic_set_input(timer.Peripheral, TIM_IC1, TIM_IC_IN_TRC);
-    //timer_ic_set_prescaler(timer.Peripheral, TIM_IC1, TIM_IC_PSC_OFF);
-    timer_ic_set_filter(timer.Peripheral, TIM_IC1, TIM_IC_DTF_DIV_32_N_8);
+    timer_ic_disable(m_timer->Id, TIM_IC1);
+    timer_ic_set_polarity(m_timer->Id, TIM_IC1, TIM_IC_BOTH); // or TIM_IC_BOTH ?
+    timer_ic_set_input(m_timer->Id, TIM_IC1, TIM_IC_IN_TRC);
+    //timer_ic_set_prescaler(m_timer->Id, TIM_IC1, TIM_IC_PSC_OFF);
+    timer_ic_set_filter(m_timer->Id, TIM_IC1, TIM_IC_DTF_DIV_32_N_8);
 
-    timer_set_counter(timer.Peripheral, 0);
-    
-    nvic_set_priority(timer.InterruptId, 0);
+    timer_set_counter(m_timer->Id, 0);
 }
 
-void  Hall::init_gpio(Port::Number port, Pin::Number pin) {
+void Hall::init_gpio(Pin pin) {
+    pin.port->enable();
     gpio_set_output_options(
-                port, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ,
-                pin);
+                pin.port->Id, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, pin.number);
     gpio_mode_setup(
-                port, GPIO_MODE_AF, GPIO_PUPD_NONE,
-                pin);
-    gpio_set_af(port, altFunction,
-                pin);
+                pin.port->Id, GPIO_MODE_AF, GPIO_PUPD_NONE, pin.number);
+    gpio_set_af(pin.port->Id, m_hX_af, pin.number);
 }
 
 void Hall::enable() {
     enabled = true;
     // initialize stuff for direction dection
     last_hall_gpios_states = {
-        gpio_get(portH1, pinH1),
-        gpio_get(portH2, pinH2),
-        gpio_get(portH3, pinH3)};
+        gpio_get(m_h1_in.port->Id, m_h1_in.number),
+        gpio_get(m_h2_in.port->Id, m_h2_in.number),
+        gpio_get(m_h3_in.port->Id, m_h3_in.number)
+    };
 
-    nvic_enable_irq(timer.InterruptId);
-    timer_enable_irq(timer.Peripheral,TIM_DIER_CC1IE);
-    timer_ic_enable(timer.Peripheral, TIM_IC1);
-    timer_enable_counter(timer.Peripheral);
+
+    m_timerInterrupt.provider->setPriority(0);
+    m_timerInterrupt.subscribe();
+
+    timer_enable_irq(m_timer->Id, TIM_DIER_CC1IE);
+    timer_ic_enable(m_timer->Id, TIM_IC1);
+    timer_enable_counter(m_timer->Id);
 }
 
 void Hall::disable() {
     enabled = false;
-    timer_disable_counter(timer.Peripheral);
-    timer_ic_disable(timer.Peripheral, TIM_IC1);
-    timer_disable_irq(timer.Peripheral,TIM_DIER_CC1IE);
-    // if timer is used for other stuff remove this
-    nvic_disable_irq(timer.InterruptId);
+    timer_disable_counter(m_timer->Id);
+    timer_ic_disable(m_timer->Id, TIM_IC1);
+    timer_disable_irq(m_timer->Id,TIM_DIER_CC1IE);
+
+    m_timerInterrupt.unsubscribe();
 }
 
 float Hall::get_pulse_period_ms() {
-    return (1000.0*pulse_time)/HALL_SAMPLE_FREQ_HZ;
+    return (1000. * pulse_time) / HALL_SAMPLE_FREQ_HZ;
 }
 
 int32_t Hall::get_pulse_count() {
@@ -111,9 +101,10 @@ int Hall::get_direction() {
 
 int Hall::compute_and_get_direction() {
     std::vector<int> current_hall_gpios_states = {
-        gpio_get(portH1, pinH1),
-        gpio_get(portH2, pinH2),
-        gpio_get(portH3, pinH3)};
+        gpio_get(m_h1_in.port->Id, m_h1_in.number),
+        gpio_get(m_h2_in.port->Id, m_h2_in.number),
+        gpio_get(m_h3_in.port->Id, m_h3_in.number)
+    };
 
     int toggled_gpio = 0;
     int edge_direction = 0;
@@ -146,28 +137,13 @@ int Hall::compute_and_get_direction() {
 }
 
 void Hall::CC_interrupt_handler(void) {
-    //if (timer_get_flag(timer.Peripheral, TIM_SR_CC1IF) == true)
-    if (timer_interrupt_source(timer.Peripheral, TIM_SR_CC1IF) == true)
+    //if (timer_get_flag(m_timer->Id, TIM_SR_CC1IF) == true)
+    if (timer_interrupt_source(m_timer->Id, TIM_SR_CC1IF) == true)
     {
-        timer_clear_flag(timer.Peripheral, TIM_SR_CC1IF);
-        pulse_time   = TIM_CCR1(timer.Peripheral);
+        timer_clear_flag(m_timer->Id, TIM_SR_CC1IF);
+        pulse_time   = TIM_CCR1(m_timer->Id);
         pulse_count += compute_and_get_direction();
     } else {
         ; // should never fall here
     }
-}
-
-void tim1_cc_isr(void)
-{
-    hallsensor1.CC_interrupt_handler();
-}
-
-void tim2_isr(void)
-{
-    hallsensor2.CC_interrupt_handler();
-}
-
-extern "C" {
-
-
 }

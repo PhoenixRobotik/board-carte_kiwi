@@ -4,29 +4,23 @@
 
 #include "definitions/gpio_cpp.h"
 #include "definitions/timers_cpp.h"
+#include "definitions/interruptions.h"
 
 #include <stdint.h>
 #include <vector>
-#include <libopencm3/stm32/timer.h>
-
-#ifdef __cplusplus
 
 class Hall
 {
 public:
-    Hall(Port::Number _portH1, Pin::Number _pinH1,
-        Port::Number _portH2, Pin::Number _pinH2,
-        Port::Number _portH3, Pin::Number _pinH3,
-        Timer const& _timer,
+    Hall(Timer* _timer, InterruptProvider* interrupt,
+        Pin h1_in, Pin h2_in, Pin h3_in,
         AltFunction::Number _altFunction)
-    : portH1(_portH1)
-    , pinH1(_pinH1)
-    , portH2(_portH2)
-    , pinH2(_pinH2)
-    , portH3(_portH3)
-    , pinH3(_pinH3)
-    , timer(_timer)
-    , altFunction(_altFunction)
+    : m_timer(_timer)
+    , m_timerInterrupt(interrupt, std::bind(&Hall::CC_interrupt_handler, this))
+    , m_h1_in(h1_in)
+    , m_h2_in(h2_in)
+    , m_h3_in(h3_in)
+    , m_hX_af(_altFunction)
     {
         init();
         enable();
@@ -50,18 +44,15 @@ public:
 
 private:
     void init_timer();
-    void init_gpio(Port::Number port, Pin::Number pin);
+    void init_gpio(Pin pin);
     int compute_and_get_direction();
-    
-    const Port::Number portH1;
-    const Pin::Number  pinH1;
-    const Port::Number portH2;
-    const Pin::Number  pinH2;
-    const Port::Number portH3;
-    const Pin::Number  pinH3;
 
-    const Timer& timer;
-    const AltFunction::Number altFunction;
+    Timer* const m_timer;
+    InterruptSubscriber m_timerInterrupt;
+
+    Pin const m_h1_in, m_h2_in, m_h3_in;
+    // Same alternate function for all pinouts (?)
+    AltFunction::Number const m_hX_af;
 
     bool enabled = false;
     uint16_t pulse_time = 0;
@@ -69,16 +60,3 @@ private:
     std::vector<int> last_hall_gpios_states;
     int direction = 0;
 };
-
-// Sensors
-extern Hall hallsensor1;
-extern Hall hallsensor2;
-
-extern "C" {
-#endif
-
-
-
-#ifdef __cplusplus
-}
-#endif
