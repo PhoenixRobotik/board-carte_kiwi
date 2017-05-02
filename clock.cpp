@@ -2,8 +2,8 @@
 
 #include "config_macros.h"
 
-#include <libopencm3/stm32/rcc.h>
 #include <libopencm3/cm3/systick.h>
+#include <libopencm3/stm32/rcc.h>
 
 void* __dso_handle;
 

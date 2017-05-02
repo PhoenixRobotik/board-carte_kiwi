@@ -1,9 +1,7 @@
 #include "interruptions.h"
 
-namespace libopencm3 {
-    #include <libopencm3/cm3/nvic.h>
-}
-using namespace libopencm3;
+#include <libopencm3/cm3/nvic.h>
+
 
 void InterruptSubscriber::subscribe() {
     provider->  subscribe(this);
@@ -47,10 +45,8 @@ InterruptProvider
 void tim1_cc_isr(void)
 {
     InterruptTimer1_CC.interrupt();
-    // hallsensor1.CC_interrupt_handler();
 }
 void tim2_isr(void)
 {
     InterruptTimer2.interrupt();
-    // hallsensor2.CC_interrupt_handler();
 }

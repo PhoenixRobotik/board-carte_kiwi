@@ -5,12 +5,10 @@
 
 #include <stdint.h>
 
-namespace libopencm3 {
-    #include <libopencm3/cm3/nvic.h>
-    #include <libopencm3/stm32/rcc.h>
-    #include <libopencm3/stm32/gpio.h>
-    #include <libopencm3/stm32/timer.h>
-}
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/timer.h>
 
 
 class Peripheral {
@@ -20,8 +18,8 @@ class Peripheral {
 public:
     Peripheral(
         uint32_t _id,
-        libopencm3::rcc_periph_clken _enable,
-        libopencm3::rcc_periph_rst _reset)
+        rcc_periph_clken _enable,
+        rcc_periph_rst _reset)
     : valid(true)
     , Id(_id)
     , Enable(_enable)
@@ -29,9 +27,9 @@ public:
     { }
 
     bool valid;
-    uint32_t                        Id;
-    libopencm3::rcc_periph_clken    Enable;
-    libopencm3::rcc_periph_rst      Reset;
+    uint32_t            Id;
+    rcc_periph_clken    Enable;
+    rcc_periph_rst      Reset;
 
     void enable() {
         rcc_periph_clock_enable(Enable);

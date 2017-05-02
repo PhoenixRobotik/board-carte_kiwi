@@ -1,12 +1,9 @@
 #include "hall.h"
 
-namespace libopencm3 {
-    #include <libopencm3/stm32/rcc.h>
-    #include <libopencm3/stm32/gpio.h>
-    #include <libopencm3/stm32/timer.h>
-}
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/timer.h>
 
-using namespace libopencm3;
 // TODO : need to handle counter overflow
 
 void Hall::init() {

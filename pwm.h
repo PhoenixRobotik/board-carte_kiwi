@@ -7,14 +7,12 @@
 
 #include <stdint.h>
 
-namespace libopencm3 {
-    #include <libopencm3/stm32/timer.h>
-}
+#include <libopencm3/stm32/timer.h>
 
 class PWM
 {
 public:
-    PWM(Peripheral* timer, libopencm3::tim_oc_id channel,
+    PWM(Peripheral* timer, tim_oc_id channel,
         Pin outPin, AltFunction::Number altFunction)
     : m_timer(timer)
     , m_channel(channel)
@@ -53,7 +51,7 @@ public:
 
 private:
     Peripheral* const m_timer;
-    libopencm3::tim_oc_id const m_channel;
+    tim_oc_id const m_channel;
 
     Pin const m_pin;
     AltFunction::Number const m_out_af;

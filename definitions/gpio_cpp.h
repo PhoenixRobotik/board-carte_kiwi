@@ -11,8 +11,8 @@ class Port
 public:
     Port(
         uint32_t _id,
-        libopencm3::rcc_periph_clken _enable,
-        libopencm3::rcc_periph_rst _reset)
+        rcc_periph_clken _enable,
+        rcc_periph_rst _reset)
     : Peripheral(_id, _enable, _reset)
     { }
 

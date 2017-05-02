@@ -20,9 +20,9 @@ public:
     , canBus(&periphCAN,
             Pin(PortA, Pin::p11), AltFunction::f9,
             Pin(PortA, Pin::p12), AltFunction::f9)
-    , pwm_Mot1(&Timer3, libopencm3::TIM_OC3,
+    , pwm_Mot1(&Timer3, TIM_OC3,
             Pin(PortB, Pin::p0), AltFunction::f2)
-    , pwm_Mot2(&Timer3, libopencm3::TIM_OC1,
+    , pwm_Mot2(&Timer3, TIM_OC1,
             Pin(PortA, Pin::p6), AltFunction::f2)
     , hallsensor1(&Timer1, &InterruptTimer1_CC,
             Pin(PortA, Pin::p8),

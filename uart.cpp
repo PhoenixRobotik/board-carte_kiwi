@@ -2,12 +2,9 @@
 
 #include "leds.h"
 
-namespace libopencm3 {
-    #include <libopencm3/stm32/f3/nvic.h>
-    #include <libopencm3/stm32/usart.h>
-}
+#include <libopencm3/stm32/f3/nvic.h>
+#include <libopencm3/stm32/usart.h>
 
-using namespace libopencm3;
 
 extern "C"
 void usart1_exti25_isr(void) {

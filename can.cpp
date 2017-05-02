@@ -11,8 +11,6 @@
 #include <libopencm3/stm32/flash.h>
 #include <libopencm3/stm32/rcc.h>
 
-using namespace libopencm3;
-
 void CANBus::init() {
     m_CANPeriph->enable();
     m_rx.port->enable();
