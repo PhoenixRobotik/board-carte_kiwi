@@ -32,7 +32,6 @@ public:
     uint32_t                        Id;
     libopencm3::rcc_periph_clken    Enable;
     libopencm3::rcc_periph_rst      Reset;
-    // uint8_t                         InterruptId;
 
     void enable() {
         rcc_periph_clock_enable(Enable);
@@ -44,3 +43,7 @@ public:
         rcc_periph_reset_release(Reset);
     }
 };
+extern Peripheral
+    // periphCAN1,
+    // periphCAN2,
+    periphCAN;

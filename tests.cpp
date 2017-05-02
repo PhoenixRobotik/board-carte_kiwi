@@ -5,6 +5,8 @@
 #include "pwm.h"
 #include "hall.h"
 #include "motor.h"
+#include "definitions/interruptions.h"
+#include "definitions/peripheral.h"
 
 #include <vector>
 
@@ -13,16 +15,25 @@ class BoardKiwi
 public:
     BoardKiwi()
     : System()
-    , activeLed(Port::pF, Pin::p0)
-    , statusLed(Port::pF, Pin::p1)
-    , pwm_Mot1(Port::pB, Pin::p0,
-            Timer3,
-            AltFunction::f2,
-            TIM_OC3)
-    , pwm_Mot2(Port::pA, Pin::p6,
-            Timer3,
-            AltFunction::f2,
-            TIM_OC1)
+    , activeLed(Pin(PortF, Pin::p0))
+    , statusLed(Pin(PortF, Pin::p1))
+    , canBus(&periphCAN,
+            Pin(PortA, Pin::p11), AltFunction::f9,
+            Pin(PortA, Pin::p12), AltFunction::f9)
+    , pwm_Mot1(&Timer3, libopencm3::TIM_OC3,
+            Pin(PortB, Pin::p0), AltFunction::f2)
+    , pwm_Mot2(&Timer3, libopencm3::TIM_OC1,
+            Pin(PortA, Pin::p6), AltFunction::f2)
+    , hallsensor1(&Timer1, &InterruptTimer1_CC,
+            Pin(PortA, Pin::p8),
+            Pin(PortA, Pin::p9),
+            Pin(PortA, Pin::p10),
+            AltFunction::f6)
+    , hallsensor2(&Timer2, &InterruptTimer2,
+            Pin(PortA, Pin::p0),
+            Pin(PortA, Pin::p1),
+            Pin(PortA, Pin::p2),
+            AltFunction::f1)
     , motor_right(pwm_Mot1)
     , motor_left(pwm_Mot2)
     // , usart1(USART1, Port::pB, Pin::p7, Port::pB, Pin::p6)
@@ -30,8 +41,11 @@ public:
     { }
 
     Led activeLed, statusLed;
+    CANBus canBus;
 
     PWM pwm_Mot1, pwm_Mot2;
+
+    Hall hallsensor1, hallsensor2;
 
     WheelHubMotor motor_right, motor_left;
     // USART usart1;
@@ -110,7 +124,6 @@ int main(int argc, char const *argv[]) {
     kiwi.sleep_ms(200);
     // pwmTest();
 
-    theCANBus().init();
     std::vector<uint8_t> data;
 
     bool ledsOn = true;
@@ -123,9 +136,9 @@ int main(int argc, char const *argv[]) {
         kiwi.activeLed.set(eepromStatus ? true : ledsOn);
 
         data = std::vector<uint8_t>(4, i++);
-        uint32_t rotation_speed_wheel1 = /*75*3.14159**/1000000/(60*hallsensor1.get_pulse_period_ms());
+        uint32_t rotation_speed_wheel1 = /*75*3.14159**/1000000/(60*kiwi.hallsensor1.get_pulse_period_ms());
         // uint32_t rotation_speed_wheel2 = /*75*3.14159**/1000/(60*hallsensor2.get_pulse_period_ms());
-        theCANBus().send(1, rotation_speed_wheel1);
+        kiwi.canBus.send(1, rotation_speed_wheel1);
         // theCANBus().send(2, rotation_speed_wheel2);
         // int32_t distance_wheel1 = /*75*3.14159/60**/hallsensor1.get_pulse_count();
         // int32_t distance_wheel2 = /*75*3.14159/60**/hallsensor2.get_pulse_count();
