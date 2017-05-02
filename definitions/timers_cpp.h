@@ -16,7 +16,7 @@ public:
 
 };
 
-// Timer1 is special and not really handled here… I think
+
 extern Timer
     Timer1,
     Timer2,

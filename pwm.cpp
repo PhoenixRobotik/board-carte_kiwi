@@ -11,10 +11,6 @@ void PWM::init() {
     m_timer->enable();
     // Enable GPIO clock
     m_pin.port->enable();
-    // Enable timer interrupt
-    nvic_enable_irq(m_timer->InterruptId);
-    // Reset timer peripheral to defaults
-    // rcc_periph_reset_pulse(timer.Reset);
 
     // Reset timer peripheral
     timer_set_mode (m_timer->Id,
