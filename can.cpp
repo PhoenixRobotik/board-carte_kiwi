@@ -38,7 +38,7 @@ void CANBus::init() {
              false,             // Time triggered communication mode.
              true,              // Automatic bus-off management.
              false,             // Automatic wakeup mode.
-             false,             // No automatic retransmission.
+             non_automatic_retransmit, // No automatic retransmission.
              false,             // Receive FIFO locked mode.
              true,              // Transmit FIFO priority.
              CAN_BTR_SJW_1TQ,   // Resynchronization time quanta jump width

@@ -11,12 +11,14 @@ class CANBus
 public:
     CANBus(Peripheral* CANPeriph,
         Pin rx, AltFunction::Number rx_af,
-        Pin tx, AltFunction::Number tx_af)
+        Pin tx, AltFunction::Number tx_af,
+        bool _non_automatic_retransmit = false)
     : m_CANPeriph(CANPeriph)
     , m_rx(rx)
     , m_tx(tx)
     , m_rx_af(rx_af)
     , m_tx_af(tx_af)
+    , non_automatic_retransmit(_non_automatic_retransmit)
     {
         init();
     }
@@ -53,6 +55,9 @@ private:
     Peripheral* m_CANPeriph;
     Pin m_rx, m_tx;
     AltFunction::Number m_rx_af, m_tx_af;
+
+    bool non_automatic_retransmit;
+
 
     static const int32_t maxSendRetries = 2500;
 
