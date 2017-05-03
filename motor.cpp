@@ -5,13 +5,13 @@
 
 void WheelHubMotor::init() {
     // useless but explicit
-    pwm.setMicrosec(0);
+    pwm->setMicrosec(0);
 }
 
 void WheelHubMotor::enable() {
-	pwm.enable();
+	pwm->enable();
 	// hall_sensor.enable();
-	pwm.setMicrosec((uint32_t) std::round(PULSE_MIDPOINT));
+	pwm->setMicrosec(static_cast<uint32_t>(std::round(PULSE_MIDPOINT)));
 }
 
 bool WheelHubMotor::set_percent_speed(double percent) {
@@ -30,7 +30,7 @@ bool WheelHubMotor::set_percent_speed(double percent) {
 	} else {
 		return false;
 	}
-	pwm.setMicrosec((uint32_t) std::round(pwm_pulse));
+	pwm->setMicrosec(static_cast<uint32_t>(std::round(pwm_pulse)));
 	return true;
 
 }
@@ -60,11 +60,11 @@ bool WheelHubMotor::set_percent_speed(double percent) {
 // }
 
 double WheelHubMotor::get_rot_per_sec_speed() {
-	return 1000.0/(HALL_TICK_PER_ROT*hall_sensor.get_pulse_period_ms());
+	return 1000.0 / (HALL_TICK_PER_ROT * hall_sensor->get_pulse_period_ms());
 }
 
 double WheelHubMotor::get_rot_per_min_speed() {
-	return 60*get_rot_per_sec_speed();
+	return 60 * get_rot_per_sec_speed();
 }
 
 extern "C" {

@@ -21,7 +21,7 @@
 class WheelHubMotor
 {
 public:
-    WheelHubMotor(PWM _pwm, Hall _hall_sensor, bool reverse = false)
+    WheelHubMotor(std::shared_ptr<PWM> _pwm, std::shared_ptr<Hall> _hall_sensor, bool reverse = false)
     : pwm(_pwm)
     , hall_sensor(_hall_sensor)
     , multiplier(reverse ? 1 : -1)
@@ -50,8 +50,8 @@ public:
     // double get_rad_per_sec_speed();
 
 private:
-    PWM pwm;
-    Hall hall_sensor;
+    std::shared_ptr<PWM> pwm;
+    std::shared_ptr<Hall> hall_sensor;
     int multiplier;
 };
 

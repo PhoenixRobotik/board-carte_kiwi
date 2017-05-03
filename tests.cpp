@@ -20,22 +20,22 @@ public:
     , canBus(&periphCAN,
             Pin(PortA, Pin::p11), AltFunction::f9,
             Pin(PortA, Pin::p12), AltFunction::f9)
-    , pwm_Mot1(&Timer3, TIM_OC3,
-            Pin(PortB, Pin::p0), AltFunction::f2)
-    , pwm_Mot2(&Timer3, TIM_OC1,
-            Pin(PortA, Pin::p6), AltFunction::f2)
-    , hallsensor1(&Timer1, &InterruptTimer1_CC,
+    , pwmMotor1(new PWM(&Timer3, TIM_OC3,
+            Pin(PortB, Pin::p0), AltFunction::f2))
+    , pwmMotor2(new PWM(&Timer3, TIM_OC1,
+            Pin(PortA, Pin::p6), AltFunction::f2))
+    , hallSensor1(new Hall(&Timer1, &InterruptTimer1_CC,
             Pin(PortA, Pin::p8),
             Pin(PortA, Pin::p9),
             Pin(PortA, Pin::p10),
-            AltFunction::f6)
-    , hallsensor2(&Timer2, &InterruptTimer2,
+            AltFunction::f6))
+    , hallSensor2(new Hall(&Timer2, &InterruptTimer2,
             Pin(PortA, Pin::p0),
             Pin(PortA, Pin::p1),
             Pin(PortA, Pin::p2),
-            AltFunction::f1)
-    , motor_right(pwm_Mot2, hallsensor2)
-    , motor_left(pwm_Mot1, hallsensor1, true)
+            AltFunction::f1))
+    , motorRight(pwmMotor1, hallSensor1)
+    , motorLeft(pwmMotor2, hallSensor2, true)
     // , usart1(USART1,
     //         Pin(PortB, Pin::p7),
     //         Pin(PortB, Pin::p6))
@@ -47,11 +47,11 @@ public:
     Led activeLed, statusLed;
     CANBus canBus;
 
-    PWM pwm_Mot1, pwm_Mot2;
+    std::shared_ptr<PWM> pwmMotor1, pwmMotor2;
 
-    Hall hallsensor1, hallsensor2;
+    std::shared_ptr<Hall> hallSensor1, hallSensor2;
 
-    WheelHubMotor motor_right, motor_left;
+    WheelHubMotor motorRight, motorLeft;
     // USART usart1, usart2;
 };
 
@@ -114,8 +114,8 @@ int main(int argc, char const *argv[]) {
 
     int percent = 0;
     int step = 5;
-    kiwi->motor_right.enable();
-    kiwi->motor_left.enable();
+    kiwi->motorRight.enable();
+    kiwi->motorLeft.enable();
     kiwi->sleep_ms(200);
 
     std::vector<uint8_t> data;
@@ -123,16 +123,16 @@ int main(int argc, char const *argv[]) {
     bool ledsOn = true;
     int i = 0;
     while(true) {
-        kiwi->motor_right.set_percent_speed(20);
-        kiwi->motor_left.set_percent_speed(20);
-        // kiwi.motor_right.set_rot_per_min_speed(percent*1180/100);
-        // kiwi.motor_right.set_rot_per_sec_speed(percent*1180/100/60);
+        kiwi->motorRight.set_percent_speed(20);
+        kiwi->motorLeft.set_percent_speed(20);
+        // kiwi.motorRight.set_rot_per_min_speed(percent*1180/100);
+        // kiwi.motorRight.set_rot_per_sec_speed(percent*1180/100/60);
         // kiwi->activeLed.set(eepromStatus ? true : ledsOn);
 
         data = std::vector<uint8_t>(4, i++);
 
-        uint32_t rotation_speed_wheel1 = 1000 * 1000/60/kiwi->hallsensor1.get_pulse_period_ms();
-        uint32_t rotation_speed_wheel2 = 1000 * kiwi->motor_left.get_rot_per_sec_speed();
+        uint32_t rotation_speed_wheel1 = 1000 * kiwi->motorRight.get_rot_per_sec_speed();
+        uint32_t rotation_speed_wheel2 = 1000 * kiwi->motorLeft.get_rot_per_sec_speed();
         kiwi->canBus.send(1, rotation_speed_wheel1);
         kiwi->canBus.send(2, rotation_speed_wheel2);
 
