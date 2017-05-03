@@ -21,9 +21,10 @@
 class WheelHubMotor
 {
 public:
-    WheelHubMotor(PWM _pwm, Hall _hall_sensor)
+    WheelHubMotor(PWM _pwm, Hall _hall_sensor, bool reverse = false)
     : pwm(_pwm)
     , hall_sensor(_hall_sensor)
+    , multiplier(reverse ? 1 : -1)
     {
         init();
     }
@@ -51,6 +52,7 @@ public:
 private:
     PWM pwm;
     Hall hall_sensor;
+    int multiplier;
 };
 
 

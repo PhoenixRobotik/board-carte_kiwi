@@ -15,6 +15,8 @@ void WheelHubMotor::enable() {
 }
 
 bool WheelHubMotor::set_percent_speed(double percent) {
+	percent *= multiplier;
+
 	double pwm_pulse;
 	if (percent > 0 and percent<=100)
 	{
@@ -34,6 +36,7 @@ bool WheelHubMotor::set_percent_speed(double percent) {
 }
 
 // bool WheelHubMotor::set_rot_per_min_speed(double target_speed) {
+//  target_speed *= multiplier;
 // 	// computation for no load speed
 // 	double pwm_pulse = target_speed*RPM2PULSE_COEFF;
 // 	pwm_pulse += (pwm_pulse > 0 ? RPM2PULSE_OFFSET : -RPM2PULSE_OFFSET);
