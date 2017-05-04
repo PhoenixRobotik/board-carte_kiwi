@@ -48,6 +48,7 @@ public:
     double get_rot_per_min_speed();
     double get_rot_per_sec_speed();
     // double get_rad_per_sec_speed();
+    double get_rot_count();
 
 private:
     std::shared_ptr<PWM> pwm;

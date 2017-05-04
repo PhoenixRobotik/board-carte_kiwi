@@ -67,6 +67,10 @@ double WheelHubMotor::get_rot_per_min_speed() {
 	return 60 * get_rot_per_sec_speed();
 }
 
+double WheelHubMotor::get_rot_count() {
+	return hall_sensor->get_pulse_count() / HALL_TICK_PER_ROT;
+}
+
 extern "C" {
 
 }
