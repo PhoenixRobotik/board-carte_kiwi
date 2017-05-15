@@ -38,6 +38,17 @@ int32_t System::getSysTick() {
 
 void System::sysTick() {
     systick_count++;
+    for (auto alarm_it = alarms.begin(); alarm_it != alarms.end(); ++alarm_it) {
+        // Remove alarms that are not referenced anymore (functions may be invalid too ^^)
+        if (alarm_it->unique())
+            alarm_it = alarms.erase(alarm_it);
+        else {
+            (*alarm_it)->call(systick_count);
+        }
+
+        
+    }
+
 }
 void System::sleep_ms(int32_t ms) {
     int count_max = systick_count + MILLIS_TO_SYSTICK(ms);
@@ -47,4 +58,9 @@ void System::sleep_ms(int32_t ms) {
 void System::sleep_us(int32_t us) {
     int count_max = systick_count + MICROS_TO_SYSTICK(us);
     while(systick_count < count_max) {}
+}
+
+
+void System::addAlarm(std::shared_ptr<Alarm> alarm) {
+    alarms.push_back(alarm);
 }
