@@ -45,7 +45,8 @@ private:
     std::set<InterruptSubscriber*> subscribers;
 };
 
-
+// Special, simpler interruption provider for systick. Should be called by class System only.
+void setSysTickHandler(std::function<void(void)>);
 
 extern InterruptProvider
     InterruptTimer1_CC,

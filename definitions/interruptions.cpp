@@ -50,3 +50,17 @@ void tim2_isr(void)
 {
     InterruptTimer2.interrupt();
 }
+
+
+// Systick handling
+std::function<void(void)> sysTickHandler = {};
+
+void setSysTickHandler(std::function<void(void)> externalHandler) {
+    sysTickHandler = externalHandler;
+}
+// LibOpenCm3 export
+extern "C"
+void sys_tick_handler() {
+    if (sysTickHandler)
+        sysTickHandler();
+}

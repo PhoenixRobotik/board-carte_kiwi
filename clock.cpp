@@ -2,8 +2,12 @@
 
 #include "config_macros.h"
 
+#include "definitions/interruptions.h"
+
 #include <libopencm3/cm3/systick.h>
 #include <libopencm3/stm32/rcc.h>
+
+#include <functional>
 
 void* __dso_handle;
 
@@ -18,6 +22,8 @@ System::System() {
     systick_counter_enable();
     systick_interrupt_enable();
 
+    setSysTickHandler(std::bind(&System::sysTick, this));
+
     rcc_periph_clock_enable(RCC_GPIOA);
     rcc_periph_clock_enable(RCC_GPIOB);
     rcc_periph_clock_enable(RCC_GPIOC);
@@ -30,6 +36,9 @@ int32_t System::getSysTick() {
     return systick_count;
 }
 
+void System::sysTick() {
+    systick_count++;
+}
 void System::sleep_ms(int32_t ms) {
     int count_max = systick_count + MILLIS_TO_SYSTICK(ms);
     while(systick_count < count_max) {}

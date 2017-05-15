@@ -17,6 +17,8 @@ public:
 
 private:
     friend void sys_tick_handler();
+    void sysTick();
+
     volatile int32_t systick_count = 0;
 };
 

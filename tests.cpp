@@ -7,24 +7,6 @@
 std::unique_ptr<BoardKiwi> kiwi = 0;
 
 
-extern "C" {
-    // LibOpenCm3 export
-    void sys_tick_handler() {
-        if (kiwi)
-            kiwi->systick_count++;
-    }
-
-    int get_systick() {
-        return kiwi
-            ? kiwi->getSysTick()
-            : 0;
-    }
-
-    void delay_ms(unsigned int ms) {
-        if (kiwi)
-            kiwi->sleep_ms(ms);
-    }
-}
 
 
 struct TestEepromData {
