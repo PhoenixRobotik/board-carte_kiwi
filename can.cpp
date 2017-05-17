@@ -11,6 +11,9 @@
 #include <libopencm3/stm32/flash.h>
 #include <libopencm3/stm32/rcc.h>
 
+#include "../canbus-driver/can_protocol.h"
+#include "../canbus-driver/can_protocol_values.h"
+
 void CANBus::init() {
     m_CANPeriph->enable();
     m_rx.port->enable();
@@ -54,33 +57,35 @@ void CANBus::init() {
     can_filter_id_mask_32bit_init(
         CAN,
         0,                      // filter nr
-        0,                      // id: only std id, no rtr
-        6 | (7<<29),            // mask: match only std id[10:8] = 0 (bootloader frames)
-        0,                      // assign to fifo0
+        // id: only std id, no rtr
+        BOARD_ID(TYPE_UNIQ, UNIQ_PILOT, ROBOT_BIGBOT) << BOARD_ID_RX_SHIFT,
+        // mask: match only std id[10:8] = 0 (bootloader frames)
+        BOARD_ID_MASK << BOARD_ID_RX_SHIFT,
+        1,                      // assign to fifo1
         true);                  // enable
 
 
     // // FIFO0 overrun interrupt enable
-    // can_enable_irq(CAN_IER_FOVIE0);
+    // can_enable_irq(m_CANPeriph->Id, CAN_IER_FOVIE0);
     // // FIFO0 full interrupt enable
-    // can_enable_irq(CAN_IER_FFIE0);
+    // can_enable_irq(m_CANPeriph->Id, CAN_IER_FFIE0);
     // FIFO0 message pending interrupt enable
-    can_enable_irq(m_CANPeriph->Id, CAN_IER_FMPIE0);
+    // can_enable_irq(m_CANPeriph->Id, CAN_IER_FMPIE0);
 
     // // FIFO1 overrun interrupt enable
-    // can_enable_irq(CAN_IER_FOVIE1);
+    // can_enable_irq(m_CANPeriph->Id, CAN_IER_FOVIE1);
     // // FIFO1 full interrupt enable
-    // can_enable_irq(CAN_IER_FFIE1);
+    // can_enable_irq(m_CANPeriph->Id, CAN_IER_FFIE1);
     // FIFO1 message pending interrupt enable
-    // can_enable_irq(CAN_IER_FMPIE1);
+    can_enable_irq(m_CANPeriph->Id, CAN_IER_FMPIE1);
 
 
     // // Transmit mailbox empty interrupt
-    // can_enable_irq(CAN_IER_TMEIE);
+    // can_enable_irq(m_CANPeriph->Id, CAN_IER_TMEIE);
 
 
-    m_Rx1_interrupt.provider->setPriority(0);
-    m_Rx1_interrupt.subscribe();
+    //m_Rx1_interrupt.provider->setPriority(0);
+    //m_Rx1_interrupt.subscribe();
 }
 
 void CANBus::deinit() {
@@ -123,50 +128,31 @@ bool CANBus::send(uint32_t id, uint8_t* data, size_t dataSize) {
     return true;
 }
 
-bool CANBus::receive() {
-    return false;
-}
+bool CANBus::receive(uint32_t *id, uint8_t *message, uint8_t *length) {
 
-
-bool can_interface_read_message(uint32_t *id, uint8_t *message, uint8_t *length, uint32_t retries)
-{
     uint32_t fid;
-    uint8_t len;
     bool ext, rtr;
 
-    while(retries-- != 0 && (CAN_RF0R(CAN) & CAN_RF0R_FMP0_MASK) == 0);
-
-    if ((CAN_RF0R(CAN) & CAN_RF0R_FMP0_MASK) == 0) {
+    if ((CAN_RF1R(CAN) & CAN_RF1R_FMP1_MASK) == 0) {
         return false;
     }
 
     can_receive(
-        CAN,        // canport
-        0,          // fifo
-        true,       // release
-        id,         // can id
-        &ext,       // extended id
-        &rtr,       // transmission request
-        &fid,       // filter id
-        &len,       // length
+        m_CANPeriph->Id, // canport
+        1,               // fifo
+        true,            // release
+        id,              // can id
+        &ext,            // extended id
+        &rtr,            // transmission request
+        &fid,            // filter id
+        length,          // length
         message
     );
-
-    *length = len;
-
     return true;
 }
 
 void CANBus::CAN_Rx1_interrupt_handler(void) {
-    // //if (timer_get_flag(m_timer->Id, TIM_SR_CC1IF) == true)
-    // if (timer_interrupt_source(m_timer->Id, TIM_SR_CC1IF) == true)
-    // {
-    //     timer_clear_flag(m_timer->Id, TIM_SR_CC1IF);
-    //     pulse_time   = TIM_CCR1(m_timer->Id);
-    //     pulse_count += compute_and_get_direction();
-    // } else {
-    //     ; // should never fall here
-    // }
+
 }
 
 // // error interrupts

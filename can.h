@@ -10,12 +10,12 @@
 class CANBus
 {
 public:
-    CANBus(Peripheral* CANPeriph, InterruptProvider* interrupt,
+    CANBus(Peripheral* CANPeriph, //InterruptProvider* interrupt,
         Pin rx, AltFunction::Number rx_af,
         Pin tx, AltFunction::Number tx_af,
         bool _non_automatic_retransmit = false)
     : m_CANPeriph(CANPeriph)
-    , m_Rx1_interrupt(interrupt, std::bind(&CANBus::CAN_Rx1_interrupt_handler, this))
+    //, m_Rx1_interrupt(interrupt, std::bind(&CANBus::CAN_Rx1_interrupt_handler, this))
     , m_rx(rx)
     , m_tx(tx)
     , m_rx_af(rx_af)
@@ -48,7 +48,7 @@ public:
     }
 
 
-    bool receive();
+    bool receive(uint32_t *id, uint8_t *message, uint8_t *length);
 
     void CAN_Rx1_interrupt_handler(void);
 
@@ -56,7 +56,7 @@ public:
 
 private:
     Peripheral* m_CANPeriph;
-    InterruptSubscriber m_Rx1_interrupt;
+    // InterruptSubscriber m_Rx1_interrupt;
     Pin m_rx, m_tx;
     AltFunction::Number m_rx_af, m_tx_af;
 
