@@ -39,17 +39,8 @@ void InterruptProvider::interrupt() {
 
 InterruptProvider
     InterruptTimer1_CC  (NVIC_TIM1_CC_IRQ),
-    InterruptTimer2     (NVIC_TIM2_IRQ);
-
-
-void tim1_cc_isr(void)
-{
-    InterruptTimer1_CC.interrupt();
-}
-void tim2_isr(void)
-{
-    InterruptTimer2.interrupt();
-}
+    InterruptTimer2     (NVIC_TIM2_IRQ),
+    InterruptCANRx1     (NVIC_CAN1_RX1_IRQ);
 
 
 // Systick handling
@@ -58,9 +49,27 @@ std::function<void(void)> sysTickHandler = {};
 void setSysTickHandler(std::function<void(void)> externalHandler) {
     sysTickHandler = externalHandler;
 }
+
 // LibOpenCm3 export
 extern "C"
+
 void sys_tick_handler() {
-    if (sysTickHandler)
+    if (sysTickHandler) {
         sysTickHandler();
+    }
+}
+
+void tim1_cc_isr(void)
+{
+    InterruptTimer1_CC.interrupt();
+}
+
+void tim2_isr(void)
+{
+    InterruptTimer2.interrupt();
+}
+
+void can1_rx1_isr(void)
+{
+    InterruptCANRx1.interrupt();
 }

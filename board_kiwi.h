@@ -17,7 +17,7 @@ public:
     : System()
     , activeLed(Pin(PortF, Pin::p0))
     , statusLed(Pin(PortF, Pin::p1))
-    , canBus(&periphCAN,
+    , canBus(&periphCAN, &InterruptCANRx1,
             Pin(PortA, Pin::p11), AltFunction::f9,
             Pin(PortA, Pin::p12), AltFunction::f9)
     , pwmMotor1(new PWM(&Timer3, TIM_OC3,

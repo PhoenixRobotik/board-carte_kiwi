@@ -65,7 +65,7 @@ void CANBus::init() {
     // // FIFO0 full interrupt enable
     // can_enable_irq(CAN_IER_FFIE0);
     // FIFO0 message pending interrupt enable
-    // can_enable_irq(CAN_IER_FMPIE0);
+    can_enable_irq(m_CANPeriph->Id, CAN_IER_FMPIE0);
 
     // // FIFO1 overrun interrupt enable
     // can_enable_irq(CAN_IER_FOVIE1);
@@ -77,6 +77,10 @@ void CANBus::init() {
 
     // // Transmit mailbox empty interrupt
     // can_enable_irq(CAN_IER_TMEIE);
+
+
+    m_Rx1_interrupt.provider->setPriority(0);
+    m_Rx1_interrupt.subscribe();
 }
 
 void CANBus::deinit() {
@@ -118,6 +122,7 @@ bool CANBus::send(uint32_t id, uint8_t* data, size_t dataSize) {
 
     return true;
 }
+
 bool CANBus::receive() {
     return false;
 }
@@ -152,10 +157,17 @@ bool can_interface_read_message(uint32_t *id, uint8_t *message, uint8_t *length,
     return true;
 }
 
-// void can1_rx1_isr(void)
-// {
-
-// }
+void CANBus::CAN_Rx1_interrupt_handler(void) {
+    // //if (timer_get_flag(m_timer->Id, TIM_SR_CC1IF) == true)
+    // if (timer_interrupt_source(m_timer->Id, TIM_SR_CC1IF) == true)
+    // {
+    //     timer_clear_flag(m_timer->Id, TIM_SR_CC1IF);
+    //     pulse_time   = TIM_CCR1(m_timer->Id);
+    //     pulse_count += compute_and_get_direction();
+    // } else {
+    //     ; // should never fall here
+    // }
+}
 
 // // error interrupts
 // void can1_sce_isr(void)
