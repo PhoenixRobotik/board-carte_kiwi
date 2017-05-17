@@ -58,9 +58,17 @@ void CANBus::init() {
         CAN,
         0,                      // filter nr
         // id: only std id, no rtr
-        BOARD_ID(TYPE_UNIQ, UNIQ_PILOT, ROBOT_BIGBOT) << BOARD_ID_RX_SHIFT,
+        FULL_IDENTIFIER(
+            0,  //tx_board (don't care)
+            BOARD_ID(TYPE_UNIQ, UNIQ_PILOT, ROBOT_BIGBOT), //rx_board
+            0,  // msg_id (don't care)
+            0), // priority (don't care)
         // mask: match only std id[10:8] = 0 (bootloader frames)
-        BOARD_ID_MASK << BOARD_ID_RX_SHIFT,
+        FULL_IDENTIFIER(
+            0,  //tx_board (don't care)
+            BOARD_ID_MASK, //rx_board
+            0,  // msg_id (don't care)
+            0), // priority (don't care)
         1,                      // assign to fifo1
         true);                  // enable
 
