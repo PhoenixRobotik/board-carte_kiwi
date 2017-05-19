@@ -51,4 +51,6 @@ void setSysTickHandler(std::function<void(void)>);
 extern InterruptProvider
     InterruptTimer1_CC,
     InterruptTimer2,
-    InterruptCANRx1;
+    InterruptCANRx1,
+    InterruptEXTI1,
+    InterruptEXTI2_TSC;

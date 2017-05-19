@@ -27,20 +27,17 @@ bool GPIO::enable_irq(bool on_rising, bool on_falling) {
         return false;
     }
 
-    // realy bad should change this
-    uint32_t exti = pin.number;
-
     // EXTI already in use
-    if (((EXTI_IMR | EXTI_EMR) & exti) != 0) {
+    if (((EXTI_IMR | EXTI_EMR) & m_exti) != 0) {
         return false;
     }
 
-    exti_set_trigger   (exti,
+    exti_set_trigger   (m_exti,
         (on_rising and on_falling) ? EXTI_TRIGGER_BOTH   :
          on_rising                 ? EXTI_TRIGGER_RISING :
                                      EXTI_TRIGGER_FALLING);
-    exti_select_source (exti, pin.port->Id);
-    exti_enable_request(exti);
+    exti_select_source (m_exti, pin.port->Id);
+    exti_enable_request(m_exti);
 
     return true;
 }
@@ -50,11 +47,12 @@ bool GPIO::disable_irq() {
         return false;
     }
 
-    // realy bad should change this
-    uint32_t exti = pin.number;
-
-    exti_disable_request(exti);
+    exti_disable_request(m_exti);
     return true;
+}
+
+void GPIO::ACK_irq() {
+    exti_reset_request(m_exti);
 }
 
 extern "C" {

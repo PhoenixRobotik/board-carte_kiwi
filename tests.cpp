@@ -65,7 +65,6 @@ void init_remote(GPIO * fake_remote)
 }
 
 void CAN_Rx1_interrupt_handler(void) {
-
     kiwi->activeLed.toggle();
     uint32_t id;
     uint8_t message[8];
@@ -73,17 +72,46 @@ void CAN_Rx1_interrupt_handler(void) {
     kiwi->canBus.receive(&id, message, &length);
 }
 
+
+void EXTI1_interrupt_handler(void) {
+    kiwi->activeLed.toggle();
+    exti_reset_request(1<<1);
+}
+
+void EXTI2_interrupt_handler(void) {
+    kiwi->activeLed.toggle();
+    exti_reset_request(1<<2);
+}
+
+
 int main(int argc, char const *argv[]) {
     kiwi = std::make_unique<BoardKiwi>();
     kiwi->statusLed.setOn();
 
+    GPIO sensor2_p2(Pin(PortA, Pin::p2), GPIO::IOMode::input);
+    GPIO sensor2_p3(Pin(PortA, Pin::p1), GPIO::IOMode::input);
+
     InterruptSubscriber CAN_Rx1_interrupt(&InterruptCANRx1,
         &CAN_Rx1_interrupt_handler);
 
-    CAN_Rx1_interrupt.provider->setPriority(0);
+    InterruptSubscriber EXTI1_interrupt(&InterruptEXTI1,
+        &EXTI1_interrupt_handler);
+
+    InterruptSubscriber EXTI2_interrupt(&InterruptEXTI2_TSC,
+        &EXTI2_interrupt_handler);
+
+    // CAN_Rx1_interrupt.provider->setPriority(0);
+    // EXTI1_interrupt.provider->setPriority(5);
+    // EXTI2_interrupt.provider->setPriority(6);
     CAN_Rx1_interrupt.subscribe();
+    EXTI1_interrupt.subscribe();
+    EXTI2_interrupt.subscribe();
 
     GPIO fake_remote(Pin(PortB, Pin::p6), GPIO::IOMode::output);
+
+
+    sensor2_p2.enable_irq(true, false);
+    sensor2_p3.enable_irq(false, true);
 
     uint8_t droite  = 0x81; // 0b10000001;
     uint8_t avant   = 0x82; // 0b10000010;

@@ -40,7 +40,9 @@ void InterruptProvider::interrupt() {
 InterruptProvider
     InterruptTimer1_CC  (NVIC_TIM1_CC_IRQ),
     InterruptTimer2     (NVIC_TIM2_IRQ),
-    InterruptCANRx1     (NVIC_CAN1_RX1_IRQ);
+    InterruptCANRx1     (NVIC_CAN1_RX1_IRQ),
+    InterruptEXTI1      (NVIC_EXTI1_IRQ),
+    InterruptEXTI2_TSC  (NVIC_EXTI2_TSC_IRQ);
 
 
 // Systick handling
@@ -73,3 +75,12 @@ void can1_rx1_isr(void)
 {
     InterruptCANRx1.interrupt();
 }
+
+void exti1_isr(void)     { InterruptEXTI1.interrupt();     }
+void exti2_tsc_isr(void) { InterruptEXTI2_TSC.interrupt(); }
+
+// void exti0_isr(void) { }
+// void exti3_isr(void) { }
+// void exti4_isr(void) { }
+// void exti15_10_isr(void) { }
+// void exti9_5_isr(void) { }
