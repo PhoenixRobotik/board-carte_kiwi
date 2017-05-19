@@ -1,6 +1,15 @@
 #include "gpio.h"
 
 
+void GPIO::init() {
+    pin.port->enable();
+    gpio_mode_setup(
+        pin.port->Id,
+        m_io_mode,
+        m_pull_mode,
+        pin.number);
+}
+
 void GPIO::set(bool on) {
     on  ? gpio_set  (pin.port->Id, pin.number)
         : gpio_clear(pin.port->Id, pin.number);
@@ -9,13 +18,8 @@ void GPIO::toggle() {
     gpio_toggle(pin.port->Id, pin.number);
 }
 
-void GPIO::init() {
-    pin.port->enable();
-    gpio_mode_setup(
-        pin.port->Id,
-        m_io_mode,
-        m_pull_mode,
-        pin.number);
+uint8_t GPIO::read() {
+    return !(gpio_get(pin.port->Id, pin.number) == 0);
 }
 
 bool GPIO::enable_irq(bool on_rising, bool on_falling) {

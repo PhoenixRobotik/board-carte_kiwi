@@ -52,5 +52,6 @@ extern InterruptProvider
     InterruptTimer1_CC,
     InterruptTimer2,
     InterruptCANRx1,
+    InterruptEXTI0,
     InterruptEXTI1,
     InterruptEXTI2_TSC;

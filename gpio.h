@@ -31,14 +31,16 @@ public:
 
     void init();
 
+    void set_mode() {};
+    void set_pupd() {};
+
     // should return false if in INPUT mode ?
     void set(bool on);
     void setOn()    { set(true);  }
     void setOff()   { set(false); }
     void toggle();
 
-    void set_mode() {};
-    void set_pupd() {};
+    uint8_t read();
 
     bool enable_irq(bool on_rising, bool on_falling);
     bool disable_irq();
