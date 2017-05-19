@@ -15,8 +15,8 @@ class BoardKiwi
 public:
     BoardKiwi()
     : System()
-    , activeLed(Pin(PortF, Pin::p0))
-    , statusLed(Pin(PortF, Pin::p1))
+    , activeLed(Pin(PortF, Pin::p0), GPIO::IOMode::output)
+    , statusLed(Pin(PortF, Pin::p1), GPIO::IOMode::output)
     , canBus(&periphCAN, // &InterruptCANRx1,
             Pin(PortA, Pin::p11), AltFunction::f9,
             Pin(PortA, Pin::p12), AltFunction::f9)

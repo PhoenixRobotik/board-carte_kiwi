@@ -83,20 +83,20 @@ int main(int argc, char const *argv[]) {
     CAN_Rx1_interrupt.provider->setPriority(0);
     CAN_Rx1_interrupt.subscribe();
 
-    GPIO fake_remote(Pin(PortB, Pin::p6));
+    GPIO fake_remote(Pin(PortB, Pin::p6), GPIO::IOMode::output);
 
     uint8_t droite  = 0x81; // 0b10000001;
     uint8_t avant   = 0x82; // 0b10000010;
-    uint8_t speed   = 0x83; // 0b10000011;
+    // uint8_t speed   = 0x83; // 0b10000011;
     uint8_t gauche  = 0x84; // 0b10000100;
-    uint8_t UV      = 0x85; // 0b10000101;
-    uint8_t on_off  = 0x86; // 0b10000110; 
-    uint8_t loop    = 0x87; // 0b10000111; 
+    // uint8_t UV      = 0x85; // 0b10000101;
+    // uint8_t on_off  = 0x86; // 0b10000110; 
+    // uint8_t loop    = 0x87; // 0b10000111; 
     uint8_t arriere = 0x88; // 0b10001000;
-    uint8_t spot    = 0x89; // 0b10001001;
-    uint8_t docking = 0x8A; // 0b10001010;
-    uint8_t _auto   = 0x8C; // 0b10001100;
-    uint8_t pause   = 0x8D; // 0b10001101;
+    // uint8_t spot    = 0x89; // 0b10001001;
+    // uint8_t docking = 0x8A; // 0b10001010;
+    // uint8_t _auto   = 0x8C; // 0b10001100;
+    // uint8_t pause   = 0x8D; // 0b10001101;
 
     init_remote(&fake_remote);
     while(1)
