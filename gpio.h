@@ -2,14 +2,14 @@
 
 #include "definitions/gpio_cpp.h"
 
-class Led {
+class GPIO {
 public:
-    Led(Pin _pin)
+    GPIO(Pin _pin)
     : pin (_pin)
     {
         init();
     }
-    ~Led() { }
+    ~GPIO() { }
     void init();
 
     void set(bool on);

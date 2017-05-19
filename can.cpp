@@ -1,6 +1,5 @@
 #include "can.h"
 
-#include "leds.h"
 #include "clock.h"
 #include "config_macros.h"
 

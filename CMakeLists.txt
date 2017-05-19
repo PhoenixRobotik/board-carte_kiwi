@@ -23,7 +23,7 @@ add_library(${PROJECT_NAME}Lib STATIC
     clock.cpp
     eeprom.cpp
     hall.cpp
-    leds.cpp
+    gpio.cpp
     motor.cpp
     pwm.cpp
     uart.cpp

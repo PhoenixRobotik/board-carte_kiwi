@@ -3,7 +3,7 @@
 #include "can.h"
 #include "clock.h"
 #include "eeprom.h"
-#include "leds.h"
+#include "gpio.h"
 #include "pwm.h"
 #include "hall.h"
 #include "motor.h"
@@ -44,7 +44,7 @@ public:
     //         Pin(PortB, Pin::p3))
     { }
 
-    Led activeLed, statusLed;
+    GPIO activeLed, statusLed;
     CANBus canBus;
 
     std::shared_ptr<PWM> pwmMotor1, pwmMotor2;

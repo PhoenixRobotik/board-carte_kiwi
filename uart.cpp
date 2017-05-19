@@ -1,7 +1,5 @@
 #include "uart.h"
 
-#include "leds.h"
-
 #include <libopencm3/stm32/f3/nvic.h>
 #include <libopencm3/stm32/usart.h>
 

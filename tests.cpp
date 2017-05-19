@@ -1,5 +1,5 @@
 #include "board_kiwi.h"
-#include "leds.h"
+#include "gpio.h"
 
 
 #include <vector>
@@ -44,7 +44,7 @@ void pwmTest() {
 #define SHORT (UNIT*2)
 #define LONG  (UNIT*9)
 
-void send_trame(Led *fake_remote, uint8_t trame)
+void send_trame(GPIO *fake_remote, uint8_t trame)
 {
     for (int i = 8; i > 0; --i)
     {
@@ -58,7 +58,7 @@ void send_trame(Led *fake_remote, uint8_t trame)
     kiwi->sleep_us(9300);
 }
 
-void init_remote(Led * fake_remote)
+void init_remote(GPIO * fake_remote)
 {
     fake_remote->set(IDLE_STATE);
     kiwi->sleep_us(9300);
@@ -83,7 +83,7 @@ int main(int argc, char const *argv[]) {
     CAN_Rx1_interrupt.provider->setPriority(0);
     CAN_Rx1_interrupt.subscribe();
 
-    Led fake_remote(Pin(PortB, Pin::p6));
+    GPIO fake_remote(Pin(PortB, Pin::p6));
 
     uint8_t droite  = 0x81; // 0b10000001;
     uint8_t avant   = 0x82; // 0b10000010;
