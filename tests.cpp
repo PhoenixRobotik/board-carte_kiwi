@@ -92,9 +92,29 @@ void EXTI0_interrupt_handler(void) {
 //     exti_reset_request(1<<2);
 // }
 
+void testFunnyActionPWM() {
+    static const int posMax = 2500;
+    static const int posMin = 400;
+
+
+    auto funnyaction = [&]() {
+        kiwi->pwmMotor1->setMicrosec(560);
+        kiwi->sleep_ms(300);
+        kiwi->pwmMotor1->setMicrosec(670);
+        kiwi->sleep_ms(4000);
+    };
+
+    while(1) {
+        funnyaction();
+    }
+
+}
 
 int main(int argc, char const *argv[]) {
     kiwi = std::make_unique<BoardKiwi>();
+
+    testFunnyActionPWM();
+
     kiwi->statusLed.setOn();
 
     GPIO sensor2_p3(Pin(PortA, Pin::p1), GPIO::IOMode::input);
@@ -134,7 +154,7 @@ int main(int argc, char const *argv[]) {
 
     init_remote(&fake_remote);
     uint8_t data[] = {0,0};
-    while(1)
+    while(true)
     {
         send_trame(&fake_remote, arriere);
         kiwi->sleep_ms(200);
@@ -144,6 +164,6 @@ int main(int argc, char const *argv[]) {
         kiwi->statusLed.toggle();
     }
 
-    while(1);
+    while(true);
     return 0;
 }
