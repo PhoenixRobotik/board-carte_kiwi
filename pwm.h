@@ -13,13 +13,15 @@ class PWM
 {
 public:
     PWM(Peripheral* timer, tim_oc_id channel,
-        Pin outPin, AltFunction::Number altFunction)
+        Pin outPin, AltFunction::Number altFunction,
+        uint32_t prescaler = PWM_GRANUL_PERIOD, 
+        uint32_t period = PWM_PERIOD)
     : m_timer(timer)
     , m_channel(channel)
     , m_pin(outPin)
     , m_out_af(altFunction)
     {
-        init();
+        init(prescaler, period);
         enable(); // But with dutycycle = 0
     }
 
@@ -27,13 +29,13 @@ public:
         deinit();
     }
 
-    void init();
+    void init(uint32_t prescaler, uint32_t period);
     void deinit() { }
 
     void enable();
     void disable();
 
-    void setDuty    (uint32_t _duty);//   { duty = _duty; }
+    void setDuty    (uint32_t _duty);
 
     // More high level sets
     void setPercent (int _percent);
@@ -46,8 +48,6 @@ public:
     uint32_t getPeriod();
     uint32_t getPrescale();
     uint32_t getDuty();
-    int setPercent ();
-    int setMillisec();
 
 private:
     Peripheral* const m_timer;

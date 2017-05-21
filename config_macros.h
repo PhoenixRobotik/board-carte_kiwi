@@ -1,37 +1,46 @@
 #pragma once
 
+#include <cstdint>
+
 #define BP __asm__("BKPT")
 
 // RCC Clock Frequency [Hz]
-#define RCC_CLOCK_FREQ_HZ   (   64'000'000)
+static const uint32_t RCC_CLOCK_FREQ_HZ (   64'000'000);
 
 // Interruptions = 10kHz = 100us (beaucoup ?)
-#define SYSTICK_FREQ_HZ     (       100'000)
-#define SYSTICK_PERIOD      (RCC_CLOCK_FREQ_HZ / SYSTICK_FREQ_HZ)
+static const uint32_t SYSTICK_FREQ_HZ   (       100'000);
+static const uint32_t SYSTICK_PERIOD    (RCC_CLOCK_FREQ_HZ / SYSTICK_FREQ_HZ);
+static_assert(SYSTICK_PERIOD == 640);
 
-#define MILLIS_TO_SYSTICK(ms) (ms * SYSTICK_FREQ_HZ /     1'000)
-#define MICROS_TO_SYSTICK(us) (us * SYSTICK_FREQ_HZ / 1'000'000)
+inline constexpr uint32_t MILLIS_TO_SYSTICK(uint32_t ms) {
+    return ms * SYSTICK_FREQ_HZ / 1'000;
+}
+inline constexpr uint32_t MICROS_TO_SYSTICK(uint32_t us) {
+    return us * SYSTICK_FREQ_HZ / 1'000'000;
+}
 
 // Granularité des PWM = prescaler = 100kHz = 10us
-#define PWM_GRANUL_FREQ_HZ  (      100'000)
-#define PWM_GRANUL_PERIOD   (RCC_CLOCK_FREQ_HZ / PWM_GRANUL_FREQ_HZ)
-// Fréquence des PWM = 250Hz = 4ms
-#define PWM_FREQ_HZ         (          400)
-#define PWM_PERIOD          (PWM_GRANUL_FREQ_HZ / PWM_FREQ_HZ)
+static const uint32_t PWM_GRANUL_FREQ_HZ(      100'000);
+static const uint32_t PWM_GRANUL_PERIOD (RCC_CLOCK_FREQ_HZ / PWM_GRANUL_FREQ_HZ);
+static_assert(PWM_GRANUL_PERIOD == 640);
+// Fréquence des PWM = 50Hz = 20ms
+static const uint32_t PWM_FREQ_HZ       (           50);
+static const uint32_t PWM_PERIOD        (PWM_GRANUL_FREQ_HZ / PWM_FREQ_HZ);
+static_assert(PWM_PERIOD == 2'000);
 
 // 50kHz and a maximum period of (1<<16)-1 means a minimal detection
 // speed of about 3mm/s and a resolution of 0.1mm with a wheel diameter
 // of 75mm and 60 pulses per tour
 // 64MHz/1280 = 50kHz
-#define HALL_PRESCALER      (         1280)
-#define HALL_COUNTER_PERIOD (    (1<<16)-1)
+static const uint32_t HALL_PRESCALER    (         1280);
+static const uint32_t HALL_COUNTER_PERIOD (  (1<<16)-1);
 // APB1 and APB2 timer frequency are considered to be the same
-#define APBx_TIMER_FREQ_HZ  (RCC_CLOCK_FREQ_HZ)
-#define HALL_SAMPLE_FREQ_HZ (APBx_TIMER_FREQ_HZ / HALL_PRESCALER)
+static const uint32_t APBx_TIMER_FREQ_HZ(RCC_CLOCK_FREQ_HZ);
+static const uint32_t HALL_SAMPLE_FREQ_HZ (APBx_TIMER_FREQ_HZ / HALL_PRESCALER);
 
 // Stm32f303k8 specific !
-#define FLASH_BASE                  (0x08000000)
-#define BASE_ADDRESS                (0x0800F000)
-#define FLASH_PAGE_NUM_MAX          (16)
-#define FLASH_PAGE_SIZE             (0x400)
-#define FLASH_WRONG_DATA_WRITTEN    (0x80)
+static const uint32_t FLASH_BASE                (0x08000000);
+static const uint32_t BASE_ADDRESS              (0x0800F000);
+static const uint32_t FLASH_PAGE_NUM_MAX        (16);
+static const uint32_t FLASH_PAGE_SIZE           (0x400);
+static const uint32_t FLASH_WRONG_DATA_WRITTEN  (0x80);
