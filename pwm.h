@@ -14,8 +14,7 @@ class PWM
 public:
     PWM(Peripheral* timer, tim_oc_id channel,
         Pin outPin, AltFunction::Number altFunction,
-        uint32_t prescaler = PWM_GRANUL_PERIOD, 
-        uint32_t period = PWM_PERIOD)
+        uint32_t prescaler, uint32_t period)
     : m_timer(timer)
     , m_channel(channel)
     , m_pin(outPin)
@@ -24,6 +23,12 @@ public:
         init(prescaler, period);
         enable(); // But with dutycycle = 0
     }
+
+    PWM(Peripheral* timer, tim_oc_id channel,
+        Pin outPin, AltFunction::Number altFunction)
+    : PWM(timer, channel, outPin, altFunction, PWM_GRANUL_PERIOD, PWM_PERIOD) 
+    { }
+
 
     ~PWM() {
         deinit();
