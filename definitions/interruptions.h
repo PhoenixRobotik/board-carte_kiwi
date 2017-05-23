@@ -54,4 +54,6 @@ extern InterruptProvider
     InterruptCANRx1,
     InterruptEXTI0,
     InterruptEXTI1,
-    InterruptEXTI2_TSC;
+    InterruptEXTI2_TSC,
+    InterruptEXTI5_to_9,
+    InterruptEXTI10_to_15;

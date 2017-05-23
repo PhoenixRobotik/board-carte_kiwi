@@ -38,12 +38,14 @@ void InterruptProvider::interrupt() {
 
 
 InterruptProvider
-    InterruptTimer1_CC  (NVIC_TIM1_CC_IRQ),
-    InterruptTimer2     (NVIC_TIM2_IRQ),
-    InterruptCANRx1     (NVIC_CAN1_RX1_IRQ),
-    InterruptEXTI0      (NVIC_EXTI0_IRQ),
-    InterruptEXTI1      (NVIC_EXTI1_IRQ),
-    InterruptEXTI2_TSC  (NVIC_EXTI2_TSC_IRQ);
+    InterruptTimer1_CC    (NVIC_TIM1_CC_IRQ),
+    InterruptTimer2       (NVIC_TIM2_IRQ),
+    InterruptCANRx1       (NVIC_CAN1_RX1_IRQ),
+    InterruptEXTI0        (NVIC_EXTI0_IRQ),
+    InterruptEXTI1        (NVIC_EXTI1_IRQ),
+    InterruptEXTI5_to_9   (NVIC_EXTI9_5_IRQ),
+    InterruptEXTI10_to_15 (NVIC_EXTI15_10_IRQ),
+    InterruptEXTI2_TSC    (NVIC_EXTI2_TSC_IRQ);
 
 
 // Systick handling
@@ -77,11 +79,10 @@ void can1_rx1_isr(void)
     InterruptCANRx1.interrupt();
 }
 
-void exti0_isr(void)     { InterruptEXTI0.interrupt();     }
-void exti1_isr(void)     { InterruptEXTI1.interrupt();     }
-void exti2_tsc_isr(void) { InterruptEXTI2_TSC.interrupt(); }
-
+void exti0_isr(void)     { InterruptEXTI0.interrupt();        }
+void exti1_isr(void)     { InterruptEXTI1.interrupt();        }
+void exti2_tsc_isr(void) { InterruptEXTI2_TSC.interrupt();    }
 // void exti3_isr(void) { }
 // void exti4_isr(void) { }
-// void exti15_10_isr(void) { }
-// void exti9_5_isr(void) { }
+void exti9_5_isr(void)   { InterruptEXTI5_to_9.interrupt();    }
+void exti15_10_isr(void) { InterruptEXTI10_to_15.interrupt(); }
