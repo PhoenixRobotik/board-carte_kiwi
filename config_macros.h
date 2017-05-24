@@ -18,6 +18,12 @@ inline constexpr uint32_t MILLIS_TO_SYSTICK(uint32_t ms) {
 inline constexpr uint32_t MICROS_TO_SYSTICK(uint32_t us) {
     return us * SYSTICK_FREQ_HZ / 1'000'000;
 }
+inline constexpr uint32_t SYSTICK_TO_MICROS(uint32_t tick) {
+    return tick * 1'000'000 / SYSTICK_FREQ_HZ;
+}
+inline constexpr uint32_t SYSTICK_TO_MILLIS(uint32_t tick) {
+    return tick * 1'000 / SYSTICK_FREQ_HZ;
+}
 
 // Granularité des PWM = prescaler = 100kHz = 10us
 static const uint32_t PWM_GRANUL_FREQ_HZ(      100'000);
