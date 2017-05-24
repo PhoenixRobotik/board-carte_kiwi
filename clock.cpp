@@ -32,7 +32,7 @@ System::System() {
     rcc_periph_clock_enable(RCC_GPIOF);
 }
 
-uint32_t System::getSysTick() {
+int32_t System::getSysTick() {
     return systick_count;
 }
 
@@ -50,13 +50,13 @@ void System::sysTick() {
     }
 
 }
-void System::sleep_ms(uint32_t ms) {
-    unsigned int count_max = systick_count + MILLIS_TO_SYSTICK(ms);
+void System::sleep_ms(int32_t ms) {
+    int count_max = systick_count + MILLIS_TO_SYSTICK(ms);
     while(systick_count < count_max) {}
 }
 
-void System::sleep_us(uint32_t us) {
-    unsigned int count_max = systick_count + MICROS_TO_SYSTICK(us);
+void System::sleep_us(int32_t us) {
+    int count_max = systick_count + MICROS_TO_SYSTICK(us);
     while(systick_count < count_max) {}
 }
 

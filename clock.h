@@ -58,9 +58,9 @@ class System
 public:
     System();
 
-    uint32_t getSysTick();
-    void    sleep_ms(uint32_t ms);
-    void    sleep_us(uint32_t us);
+    int32_t getSysTick();
+    void    sleep_ms(int32_t ms);
+    void    sleep_us(int32_t us);
 
     void addAlarm(std::shared_ptr<Alarm> alarm);
 
@@ -70,6 +70,6 @@ private:
 
     std::vector<std::shared_ptr<Alarm>> alarms;
 
-    volatile uint32_t systick_count = 0;
+    volatile int32_t systick_count = 0;
 };
 
