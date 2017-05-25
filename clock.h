@@ -12,7 +12,7 @@ class Alarm
 {
 public:
     // Takes a callback that takes a reference on self.
-    Alarm(std::function<void(Alarm&)> _callback, int _time, int _now, bool _repeat)
+    Alarm(std::function<void(Alarm&)> _callback, int32_t _time, int32_t _now, bool _repeat)
     : callback(_callback)
     , enabled(true)
     , time(_time)
@@ -25,15 +25,16 @@ public:
 
     void enable() { enabled = true; }
     void disable(){ enabled = false;}
-    void setTime(int _time) { time = _time; }
+    void setTime(int32_t _time) { time = _time; }
     void setRepeat(bool _repeat) { repeat = _repeat; }
 
-    void call(int thisTime) {
+    void call(int32_t thisTime) {
         if (callback && enabled) {
             if (repeat && (lastCallTime - thisTime) >= time) {
                 lastCallTime = thisTime;
                 callback(*this);
-            } else if (!repeat && thisTime >= time) {
+            } 
+            if (!repeat && thisTime >= time) {
                 disable();
                 lastCallTime = thisTime;
                 callback(*this);
@@ -45,8 +46,8 @@ private:
     std::function<void(Alarm&)> callback;
 
     bool enabled;
-    int time;
-    int lastCallTime;
+    int32_t time;
+    int32_t lastCallTime;
     bool repeat;
 
 

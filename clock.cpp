@@ -51,12 +51,12 @@ void System::sysTick() {
 
 }
 void System::sleep_ms(int32_t ms) {
-    int count_max = systick_count + MILLIS_TO_SYSTICK(ms);
+    int32_t count_max = systick_count + MILLIS_TO_SYSTICK(ms);
     while(systick_count < count_max) {}
 }
 
 void System::sleep_us(int32_t us) {
-    int count_max = systick_count + MICROS_TO_SYSTICK(us);
+    int32_t count_max = systick_count + MICROS_TO_SYSTICK(us);
     while(systick_count < count_max) {}
 }
 
